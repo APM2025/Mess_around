@@ -12,9 +12,9 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from database_version_2.src.database import get_session
-from database_version_2.src.fs_analysis import VaccinationAnalyzer
-from database_version_2.src.visualization import VaccinationVisualizer
+from src.database import get_session
+from src.fs_analysis import VaccinationAnalyzer
+from src.visualization import VaccinationVisualizer
 
 
 def main():

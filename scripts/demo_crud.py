@@ -12,8 +12,8 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from database_version_2.src.database import get_session
-from database_version_2.src.crud import VaccinationCRUD
+from src.database import get_session
+from src.crud import VaccinationCRUD
 
 
 def main():

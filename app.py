@@ -19,13 +19,13 @@ import base64
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-from database_version_2.src.database import get_session
-from database_version_2.src.fs_analysis import VaccinationAnalyzer
-from database_version_2.src.visualization import VaccinationVisualizer
-from database_version_2.src.crud import VaccinationCRUD
-from database_version_2.src.export import DataExporter
-from database_version_2.src.user_log import UserActivityLogger
-from database_version_2.src.table_builder import TableBuilder
+from src.database import get_session
+from src.fs_analysis import VaccinationAnalyzer
+from src.visualization import VaccinationVisualizer
+from src.crud import VaccinationCRUD
+from src.export import DataExporter
+from src.user_log import UserActivityLogger
+from src.table_builder import TableBuilder
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -226,6 +226,51 @@ def visualize_summary():
     })
 
 
+@app.route('/api/visualize/compare-areas', methods=['POST'])
+def visualize_compare_areas():
+    """Generate area comparison chart."""
+    data = request.json
+    area_codes = data.get('area_codes', [])
+    cohort_name = data.get('cohort_name', '24 months')
+    year = data.get('year', 2024)
+
+    logger.log_action("visualize", "compare_areas", f"areas={len(area_codes)}, cohort={cohort_name}")
+
+    if not area_codes or len(area_codes) < 2:
+        return jsonify({'error': 'Please select at least 2 areas to compare'}), 400
+
+    # Get data for selected areas
+    table_data = table_builder.get_utla_table(cohort_name=cohort_name, year=year)
+
+    # Filter to selected areas
+    selected_data = [row for row in table_data if row['code'] in area_codes]
+
+    if not selected_data:
+        return jsonify({'error': 'No data found for selected areas'}), 404
+
+    chart_path = visualizer.plot_area_comparison(
+        selected_data,
+        cohort_name=cohort_name,
+        title=f"Vaccine Coverage Comparison - {cohort_name}",
+        filename=f"compare_areas_{cohort_name.replace(' ', '_')}.png"
+    )
+
+    return jsonify({
+        'chart_url': f"/static/charts/{chart_path.name}"
+    })
+
+
+@app.route('/api/areas', methods=['GET'])
+def get_areas():
+    """Get all available areas for selection."""
+    areas = session.query(GeographicArea).filter_by(area_type='utla').order_by(GeographicArea.area_name).all()
+
+    return jsonify([{
+        'code': area.area_code,
+        'name': area.area_name
+    } for area in areas])
+
+
 @app.route('/api/visualize/distribution', methods=['POST'])
 def visualize_distribution():
     """Generate distribution chart."""
@@ -349,6 +394,13 @@ def get_utla_table():
     table_data = table_builder.get_utla_table(cohort_name=cohort_name, year=year)
 
     return jsonify({
+        'title': f'Table 4. Completed primary immunisations in children aged {cohort_name} in England by UTLA',
+        'notes': [
+            '[z] not applicable',
+            '[note 18] City of London is included in Hackney.',
+            '[note 19] Isles of Scilly is included in Cornwall.',
+            '[note 23] Please note that system changes in 14 UTLAs in London earlier this year...'
+        ],
         'cohort': cohort_name,
         'year': year,
         'row_count': len(table_data),
@@ -397,6 +449,32 @@ def get_table1():
     logger.log_action("query", "table1_uk_by_country", f"cohort={cohort_name}, year={year}")
 
     result = table_builder.get_table1_uk_by_country(cohort_name=cohort_name, year=year)
+
+    return jsonify(result)
+
+
+@app.route('/api/tables/hepb', methods=['POST'])
+def get_hepb_table():
+    """Get Table 7: Neonatal Hepatitis B coverage by UTLA."""
+    data = request.json
+    year = data.get('year', 2024)
+
+    logger.log_action("query", "hepb_table", f"year={year}")
+
+    result = table_builder.get_hepb_table(year=year)
+
+    return jsonify(result)
+
+
+@app.route('/api/tables/bcg', methods=['POST'])
+def get_bcg_table():
+    """Get Table 8: BCG vaccine coverage by UTLA."""
+    data = request.json
+    year = data.get('year', 2024)
+
+    logger.log_action("query", "bcg_table", f"year={year}")
+
+    result = table_builder.get_bcg_table(year=year)
 
     return jsonify(result)
 

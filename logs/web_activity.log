@@ -64,3 +64,158 @@
 [2025-12-09 14:51:06] QUERY: table1_uk_by_country | cohort=12 months, year=2024
 [2025-12-09 14:51:10] VIEW: dashboard | ods_tables
 [2025-12-09 14:51:10] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:30:40] VIEW: dashboard | ods_tables
+[2025-12-09 18:30:40] VIEW: dashboard | table_view
+[2025-12-09 18:30:40] VIEW: dashboard | charts_view
+[2025-12-09 18:30:40] QUERY: get_vaccines | api_call
+[2025-12-09 18:30:40] QUERY: get_vaccines | api_call
+[2025-12-09 18:30:40] VISUALIZE: top_areas | vaccine=None
+[2025-12-09 18:30:41] VISUALIZE: top_areas | vaccine=MMR1
+[2025-12-09 18:30:41] VISUALIZE: trend | vaccine=MMR1
+[2025-12-09 18:30:41] VISUALIZE: distribution | vaccine=MMR1
+[2025-12-09 18:30:42] VISUALIZE: summary | vaccine=MMR1
+[2025-12-09 18:30:42] EXPORT: csv | vaccine=MMR1
+[2025-12-09 18:30:42] QUERY: filter_data | vaccine=MMR1, cohort=24 months
+[2025-12-09 18:30:42] QUERY: get_summary | vaccine=MMR1
+[2025-12-09 18:30:42] QUERY: get_top_areas | vaccine=MMR1, n=10
+[2025-12-09 18:30:42] QUERY: get_trend | vaccine=MMR1
+[2025-12-09 18:30:42] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:30:42] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 18:30:42] QUERY: regional_table | cohort=24 months
+[2025-12-09 18:30:42] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-09 18:30:42] CREATE: vaccine | code=TEST999
+[2025-12-09 18:30:42] DELETE: vaccine | code=TEST999
+[2025-12-09 18:30:42] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-09 18:31:09] VIEW: dashboard | ods_tables
+[2025-12-09 18:31:09] VIEW: dashboard | table_view
+[2025-12-09 18:31:09] VIEW: dashboard | charts_view
+[2025-12-09 18:31:09] QUERY: get_vaccines | api_call
+[2025-12-09 18:31:09] QUERY: get_vaccines | api_call
+[2025-12-09 18:31:09] VISUALIZE: top_areas | vaccine=None
+[2025-12-09 18:31:10] VISUALIZE: top_areas | vaccine=MMR1
+[2025-12-09 18:31:10] VISUALIZE: trend | vaccine=MMR1
+[2025-12-09 18:31:10] VISUALIZE: distribution | vaccine=MMR1
+[2025-12-09 18:31:11] VISUALIZE: summary | vaccine=MMR1
+[2025-12-09 18:31:11] EXPORT: csv | vaccine=MMR1
+[2025-12-09 18:31:11] QUERY: filter_data | vaccine=MMR1, cohort=24 months
+[2025-12-09 18:31:11] QUERY: get_summary | vaccine=MMR1
+[2025-12-09 18:31:11] QUERY: get_top_areas | vaccine=MMR1, n=10
+[2025-12-09 18:31:11] QUERY: get_trend | vaccine=MMR1
+[2025-12-09 18:31:11] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:31:11] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 18:31:11] QUERY: regional_table | cohort=24 months
+[2025-12-09 18:31:11] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-09 18:31:11] CREATE: vaccine | code=TEST999
+[2025-12-09 18:31:11] DELETE: vaccine | code=TEST999
+[2025-12-09 18:31:11] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-09 18:33:27] VIEW: dashboard | ods_tables
+[2025-12-09 18:33:29] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:33:29] QUERY: get_vaccines | api_call
+[2025-12-09 18:33:43] VISUALIZE: trend | vaccine=MMR1
+[2025-12-09 18:33:49] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:44:20] VIEW: dashboard | ods_tables
+[2025-12-09 18:44:22] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:44:22] QUERY: get_vaccines | api_call
+[2025-12-09 18:44:30] VISUALIZE: top_areas | vaccine=dTaP_IPV_booster
+[2025-12-09 18:44:40] VIEW: dashboard | ods_tables
+[2025-12-09 18:44:40] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:44:40] QUERY: get_vaccines | api_call
+[2025-12-09 18:44:43] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:47:42] VIEW: dashboard | ods_tables
+[2025-12-09 18:47:43] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:47:43] QUERY: get_vaccines | api_call
+[2025-12-09 18:47:46] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:47:59] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 18:48:01] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 18:48:05] QUERY: bcg_table | year=2024
+[2025-12-09 18:52:08] VIEW: dashboard | ods_tables
+[2025-12-09 18:52:10] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:52:10] QUERY: get_vaccines | api_call
+[2025-12-09 18:52:12] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:52:12] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:52:14] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 18:52:16] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 18:52:21] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:52:23] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:55:30] VIEW: dashboard | ods_tables
+[2025-12-09 18:55:31] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:55:31] QUERY: get_vaccines | api_call
+[2025-12-09 18:55:35] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 18:55:37] QUERY: hepb_table | year=2024
+[2025-12-09 18:55:40] QUERY: bcg_table | year=2024
+[2025-12-09 18:57:34] VIEW: dashboard | ods_tables
+[2025-12-09 18:57:34] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:57:34] QUERY: get_vaccines | api_call
+[2025-12-09 18:57:38] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 18:57:44] QUERY: table1_uk_by_country | cohort=5 years, year=2024
+[2025-12-09 18:57:50] QUERY: table1_uk_by_country | cohort=24 months, year=2024
+[2025-12-09 18:57:54] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 18:57:55] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 18:57:59] QUERY: hepb_table | year=2024
+[2025-12-09 18:58:06] QUERY: bcg_table | year=2024
+[2025-12-09 18:58:08] QUERY: bcg_table | year=2024
+[2025-12-09 19:00:14] QUERY: bcg_table | year=2024
+[2025-12-09 19:00:20] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:00:23] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:02:23] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 19:02:45] QUERY: utla_table | cohort=12 months, year=2023
+[2025-12-09 19:02:45] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 19:02:50] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 19:02:54] QUERY: utla_table | cohort=5 years, year=2024
+[2025-12-09 19:04:39] VIEW: dashboard | ods_tables
+[2025-12-09 19:04:40] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:04:40] QUERY: get_vaccines | api_call
+[2025-12-09 19:04:53] VIEW: dashboard | ods_tables
+[2025-12-09 19:04:53] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:04:53] QUERY: get_vaccines | api_call
+[2025-12-09 19:04:57] QUERY: table1_uk_by_country | cohort=24 months, year=2024
+[2025-12-09 19:05:04] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 19:05:12] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 19:06:40] VIEW: dashboard | ods_tables
+[2025-12-09 19:06:40] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:06:40] QUERY: get_vaccines | api_call
+[2025-12-09 19:06:53] QUERY: table1_uk_by_country | cohort=24 months, year=2024
+[2025-12-09 19:06:58] QUERY: table1_uk_by_country | cohort=5 years, year=2024
+[2025-12-09 19:07:03] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:07:06] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 19:07:08] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 19:07:24] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 19:07:30] QUERY: utla_table | cohort=5 years, year=2024
+[2025-12-09 19:07:41] QUERY: hepb_table | year=2024
+[2025-12-09 19:12:09] QUERY: utla_table | cohort=5 years, year=2024
+[2025-12-09 19:12:10] QUERY: utla_table | cohort=5 years, year=2024
+[2025-12-09 19:12:17] QUERY: table1_uk_by_country | cohort=5 years, year=2024
+[2025-12-09 19:12:17] QUERY: table1_uk_by_country | cohort=5 years, year=2024
+[2025-12-09 19:12:20] QUERY: table1_uk_by_country | cohort=5 years, year=2024
+[2025-12-09 19:12:24] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:12:28] QUERY: table1_uk_by_country | cohort=24 months, year=2024
+[2025-12-09 19:12:32] QUERY: table1_uk_by_country | cohort=5 years, year=2024
+[2025-12-09 19:18:11] VIEW: dashboard | ods_tables
+[2025-12-09 19:18:13] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:18:13] QUERY: get_vaccines | api_call
+[2025-12-09 19:18:18] QUERY: table1_uk_by_country | cohort=24 months, year=2024
+[2025-12-09 19:18:24] QUERY: table1_uk_by_country | cohort=5 years, year=2024
+[2025-12-09 19:18:29] VISUALIZE: top_areas | vaccine=DTaP_IPV_Hib_HepB
+[2025-12-09 19:18:38] VISUALIZE: trend | vaccine=DTaP_IPV_Hib_HepB
+[2025-12-09 19:18:49] VISUALIZE: distribution | vaccine=DTaP_IPV_Hib_HepB
+[2025-12-09 19:19:03] VISUALIZE: summary | vaccine=DTaP_IPV_Hib_HepB
+[2025-12-09 19:19:25] QUERY: utla_table | cohort=5 years, year=2024
+[2025-12-09 19:19:40] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 19:19:48] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 19:21:23] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:21:24] VIEW: dashboard | ods_tables
+[2025-12-09 19:21:26] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:21:26] QUERY: get_vaccines | api_call
+[2025-12-09 19:21:31] VIEW: dashboard | ods_tables
+[2025-12-09 19:21:31] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:21:31] QUERY: get_vaccines | api_call
+[2025-12-09 19:21:33] VIEW: dashboard | ods_tables
+[2025-12-09 19:21:33] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:21:33] QUERY: get_vaccines | api_call
+[2025-12-09 19:22:34] VIEW: dashboard | ods_tables
+[2025-12-09 19:22:36] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 19:22:36] QUERY: get_vaccines | api_call
+[2025-12-09 19:22:45] QUERY: table1_uk_by_country | cohort=24 months, year=2024
+[2025-12-09 19:22:52] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 19:24:08] VISUALIZE: distribution | vaccine=MMR1
+[2025-12-09 19:24:13] VISUALIZE: distribution | vaccine=PCV1

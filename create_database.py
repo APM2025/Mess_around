@@ -15,14 +15,15 @@ from pathlib import Path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-from database_version_2.src.database import get_session
-from database_version_2.src.models import (
+from src.database import get_session
+from src.models import (
     GeographicArea, Vaccine, AgeCohort, FinancialYear,
-    LocalAuthorityCoverage, EnglandTimeSeries
+    LocalAuthorityCoverage, EnglandTimeSeries, NationalCoverage,
+    RegionalTimeSeries, SpecialProgram
 )
 
 # Import loaders
-from database_version_2.src.load_reference_data import (
+from src.load_reference_data import (
     load_geographic_areas,
     load_vaccines,
     load_age_cohorts,
@@ -74,10 +75,22 @@ def main():
 
         # Try to load CSV data
         try:
-            from database_version_2.src.load_local_authority import load_all_local_authority_coverage
-            from database_version_2.src.load_england_time_series import load_all_england_time_series
+            from src.load_national_coverage import load_all_national_coverage
+            from src.load_local_authority import load_all_local_authority_coverage
+            from src.load_england_time_series import load_all_england_time_series
+            from src.load_regional_time_series import load_all_regional_time_series
+            from src.load_special_programs import load_all_special_programs
 
             print("\n[4/5] Loading fact data from CSV files...")
+
+            # Load national coverage (UK + 4 countries)
+            try:
+                print("    - Loading national coverage data (UK + countries)...")
+                load_all_national_coverage(csv_path, session)
+                nc_count = session.query(NationalCoverage).count()
+                print(f"      [OK] Loaded {nc_count} national coverage records")
+            except Exception as e:
+                print(f"      [WARN] National coverage not loaded: {str(e)[:100]}")
 
             # Load local authority data
             try:
@@ -97,6 +110,24 @@ def main():
             except Exception as e:
                 print(f"      [WARN] England time series not loaded: {str(e)[:100]}")
 
+            # Load regional time series
+            try:
+                print("    - Loading regional time series data...")
+                load_all_regional_time_series(csv_path, session)
+                rt_count = session.query(RegionalTimeSeries).count()
+                print(f"      [OK] Loaded {rt_count} regional time series records")
+            except Exception as e:
+                print(f"      [WARN] Regional time series not loaded: {str(e)[:100]}")
+
+            # Load special programs (HepB and BCG)
+            try:
+                print("    - Loading special programs (HepB, BCG)...")
+                load_all_special_programs(csv_path, session)
+                sp_count = session.query(SpecialProgram).count()
+                print(f"      [OK] Loaded {sp_count} special program records")
+            except Exception as e:
+                print(f"      [WARN] Special programs not loaded: {str(e)[:100]}")
+
         except ImportError as e:
             print(f"    [WARN] CSV loaders not fully configured: {str(e)[:100]}")
             print("    Reference data loaded successfully, but CSV fact data skipped")
@@ -107,12 +138,15 @@ def main():
     # Step 5: Summary
     print("\n[5/5] Database Summary:")
     print("-" * 70)
-    print(f"    Geographic Areas:     {session.query(GeographicArea).count()}")
-    print(f"    Vaccines:             {session.query(Vaccine).count()}")
-    print(f"    Age Cohorts:          {session.query(AgeCohort).count()}")
-    print(f"    Financial Years:      {session.query(FinancialYear).count()}")
-    print(f"    LA Coverage Records:  {session.query(LocalAuthorityCoverage).count()}")
-    print(f"    England Time Series:  {session.query(EnglandTimeSeries).count()}")
+    print(f"    Geographic Areas:       {session.query(GeographicArea).count()}")
+    print(f"    Vaccines:               {session.query(Vaccine).count()}")
+    print(f"    Age Cohorts:            {session.query(AgeCohort).count()}")
+    print(f"    Financial Years:        {session.query(FinancialYear).count()}")
+    print(f"    National Coverage:      {session.query(NationalCoverage).count()}")
+    print(f"    LA Coverage Records:    {session.query(LocalAuthorityCoverage).count()}")
+    print(f"    England Time Series:    {session.query(EnglandTimeSeries).count()}")
+    print(f"    Regional Time Series:   {session.query(RegionalTimeSeries).count()}")
+    print(f"    Special Programs:       {session.query(SpecialProgram).count()}")
 
     session.close()
 
