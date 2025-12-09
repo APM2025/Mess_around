@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from database_version_2.src.models import (
     GeographicArea, Vaccine, AgeCohort, FinancialYear,
-    LocalAuthorityCoverage, RegionalTimeSeries
+    NationalCoverage, LocalAuthorityCoverage, RegionalTimeSeries
 )
 
 
@@ -85,8 +85,8 @@ class TableBuilder:
             row['note'] = '[note 23]' if area.area_name == 'England' or area.area_name == 'United Kingdom' else '[z]'
             row['number_aged_12_months'] = None
 
-            # Get coverage records
-            coverage_records = self.session.query(LocalAuthorityCoverage).filter_by(
+            # Get coverage records from NationalCoverage
+            coverage_records = self.session.query(NationalCoverage).filter_by(
                 area_code=area.area_code,
                 cohort_id=cohort.cohort_id,
                 year_id=year_obj.year_id
