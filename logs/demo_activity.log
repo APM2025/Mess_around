@@ -1,0 +1,7 @@
+[2025-12-09 13:27:38] QUERY: filter_data | vaccine_code=MMR1, cohort=24 months
+[2025-12-09 13:27:38] QUERY: get_summary | 149 records
+[2025-12-09 13:27:38] QUERY: get_top_areas | n=10
+[2025-12-09 13:27:38] QUERY: filter_data | vaccine_code=MMR1, records=149
+[2025-12-09 13:27:38] EXPORT: csv | file=top_20_mmr1_coverage.csv, rows=20
+[2025-12-09 13:27:38] EXPORT: csv | file=mmr1_summary_stats.csv, rows=4
+[2025-12-09 13:27:38] EXPORT: csv | file=mmr1_trend_data.csv, rows=16

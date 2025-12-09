@@ -1,0 +1,48 @@
+[2025-12-09 13:35:46] VIEW: dashboard | main_page
+[2025-12-09 13:35:47] QUERY: get_vaccines | api_call
+[2025-12-09 13:36:25] QUERY: get_summary | vaccine=Rota
+[2025-12-09 13:36:34] QUERY: get_summary | vaccine=Rota
+[2025-12-09 13:36:35] QUERY: get_top_areas | vaccine=Rota, n=9
+[2025-12-09 13:36:40] VISUALIZE: top_areas | vaccine=Rota
+[2025-12-09 13:36:41] VISUALIZE: trend | vaccine=Rota
+[2025-12-09 13:36:41] VISUALIZE: summary | vaccine=Rota
+[2025-12-09 13:36:41] VISUALIZE: distribution | vaccine=Rota
+[2025-12-09 13:36:47] VISUALIZE: top_areas | vaccine=Rota
+[2025-12-09 13:36:47] VISUALIZE: trend | vaccine=Rota
+[2025-12-09 13:36:47] VISUALIZE: summary | vaccine=Rota
+[2025-12-09 13:36:47] VISUALIZE: distribution | vaccine=Rota
+[2025-12-09 13:37:02] QUERY: get_top_areas | vaccine=MMR1, n=9
+[2025-12-09 13:37:04] QUERY: get_top_areas | vaccine=MMR1, n=9
+[2025-12-09 13:37:05] QUERY: get_top_areas | vaccine=MMR1, n=9
+[2025-12-09 13:50:57] VIEW: dashboard | table_view
+[2025-12-09 13:50:58] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 13:51:03] QUERY: regional_table | cohort=24 months
+[2025-12-09 13:51:05] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-09 13:51:06] QUERY: regional_table | cohort=24 months
+[2025-12-09 13:51:11] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-09 13:54:37] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:54:47] VIEW: dashboard | ods_tables
+[2025-12-09 13:54:48] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:56:33] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:56:37] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:56:38] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:56:38] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:56:38] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:56:38] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:57:10] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:59:32] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 13:59:40] VIEW: dashboard | ods_tables
+[2025-12-09 13:59:40] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:00:06] VIEW: dashboard | ods_tables
+[2025-12-09 14:00:06] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:00:17] VIEW: dashboard | ods_tables
+[2025-12-09 14:00:18] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:00:22] VIEW: dashboard | ods_tables
+[2025-12-09 14:00:22] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:00:33] VIEW: dashboard | ods_tables
+[2025-12-09 14:00:34] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:04:08] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:04:36] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:04:58] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 14:05:29] VIEW: dashboard | ods_tables
+[2025-12-09 14:05:30] QUERY: table1_uk_by_country | cohort=12 months, year=2024

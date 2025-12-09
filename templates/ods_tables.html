@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccination Coverage - Annual Data Tables</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: white;
+            color: #000;
+            font-size: 11pt;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .table-title {
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            color: #000;
+        }
+
+        .table-note {
+            font-size: 9pt;
+            color: #333;
+            margin: 5px 0;
+            line-height: 1.3;
+        }
+
+        .note-reference {
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th {
+            background: #f2f2f2;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+
+        th input {
+            width: 100%;
+            margin-top: 5px;
+            padding: 4px;
+            font-size: 9pt;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        td {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+        }
+
+        .number-cell {
+            text-align: right;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .controls {
+            background: #f8f8f8;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .control-group {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+
+        .control-group label {
+            display: inline-block;
+            margin-right: 8px;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        .control-group select {
+            padding: 5px 10px;
+            font-size: 10pt;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            padding: 6px 16px;
+            font-size: 10pt;
+            border: 1px solid #005eb8;
+            background: #005eb8;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background: #004a94;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #005eb8;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f4f5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .empty-row {
+            height: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="table-title" style="font-size: 16pt; margin-bottom: 20px;">
+            Vaccination Coverage Annual Data Tables 2024-2025
+        </h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Table:</label>
+                <select id="table-select" onchange="loadTable()">
+                    <option value="table1">Table 1: UK by Country (12 months)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Year:</label>
+                <select id="year-select">
+                    <option value="2024">2024-2025</option>
+                    <option value="2023">2023-2024</option>
+                    <option value="2022">2022-2023</option>
+                </select>
+            </div>
+            <button onclick="loadTable()">Load Table</button>
+            <button class="btn-secondary" onclick="exportTable()">Export CSV</button>
+            <button class="btn-secondary" onclick="clearFilters()">Clear Filters</button>
+        </div>
+
+        <div id="table-container">
+            <div class="loading">Select a table and click "Load Table" to begin</div>
+        </div>
+    </div>
+
+    <script>
+        let currentTableData = null;
+        let filteredData = null;
+
+        async function loadTable() {
+            const tableType = document.getElementById('table-select').value;
+            const year = parseInt(document.getElementById('year-select').value);
+            const container = document.getElementById('table-container');
+
+            container.innerHTML = '<div class="loading">Loading table data...</div>';
+
+            try {
+                let response;
+                if (tableType === 'table1') {
+                    response = await fetch('/api/tables/table1', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({cohort_name: '12 months', year: year})
+                    });
+                }
+
+                const result = await response.json();
+                currentTableData = result;
+                filteredData = result.data;
+
+                renderTable(result);
+
+            } catch (error) {
+                container.innerHTML = `<div class="loading" style="color: red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        function renderTable(tableData) {
+            const container = document.getElementById('table-container');
+
+            // Title
+            let html = `<div class="table-title">${tableData.title}</div>`;
+
+            // Notes
+            html += '<div class="table-note">This worksheet contains one table. Some cells may refer to notes which can be found on the Notes worksheet.</div>';
+
+            if (tableData.notes && tableData.notes.length > 0) {
+                tableData.notes.forEach(note => {
+                    const noteRef = note.match(/\[.*?\]/)?.[0] || '';
+                    const noteText = note.replace(/\[.*?\]\s*/, '');
+                    html += `<div class="table-note"><span class="note-reference">${noteRef}</span> ${noteText}</div>`;
+                });
+            }
+
+            // Table
+            if (filteredData && filteredData.length > 0) {
+                html += '<table id="data-table">';
+
+                // Headers - reorder columns to match ODS format
+                const firstRow = filteredData[0];
+                const allColumns = Object.keys(firstRow);
+
+                // Define correct column order
+                const fixedColumns = ['geographic_area', 'note', 'number_aged_12_months'];
+                const vaccineColumns = allColumns.filter(c => c.startsWith('coverage_at_'));
+
+                // Reorder vaccine columns
+                const orderedVaccineColumns = [];
+                ['DTaP_IPV_Hib_HepB', 'PCV1', 'Rota', 'MenB'].forEach(vcode => {
+                    const col = vaccineColumns.find(c => c.includes(vcode));
+                    if (col) orderedVaccineColumns.push(col);
+                });
+
+                const columns = [...fixedColumns, ...orderedVaccineColumns];
+
+                html += '<thead><tr>';
+                columns.forEach(col => {
+                    let displayName = col;
+
+                    // Custom mappings for specific columns
+                    if (col === 'geographic_area') {
+                        displayName = 'Geographic area';
+                    } else if (col === 'note') {
+                        displayName = 'Note';
+                    } else if (col === 'number_aged_12_months') {
+                        displayName = 'Number aged 12 months';
+                    } else if (col.startsWith('coverage_at_12_months_')) {
+                        const vaccineName = col.replace('coverage_at_12_months_', '')
+                            .replace(/_/g, '/')
+                            .replace('Rota', 'Rota')
+                            .replace('MenB', 'MenB');
+                        displayName = `Coverage at 12 months ${vaccineName} (%)`;
+                    } else if (col.startsWith('coverage_at_24_months_')) {
+                        const vaccineName = col.replace('coverage_at_24_months_', '')
+                            .replace(/_/g, '/');
+                        displayName = `Coverage at 24 months ${vaccineName} (%)`;
+                    } else if (col.startsWith('coverage_at_5_years_')) {
+                        const vaccineName = col.replace('coverage_at_5_years_', '')
+                            .replace(/_/g, '/');
+                        displayName = `Coverage at 5 years ${vaccineName} (%)`;
+                    } else {
+                        // Fallback: capitalize first letter of each word
+                        displayName = col.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    }
+
+                    html += `<th>
+                        ${displayName}
+                        <input type="text" placeholder="Filter..." onkeyup="filterColumn(this, '${col}')" />
+                    </th>`;
+                });
+                html += '</tr></thead>';
+
+                // Data rows
+                html += '<tbody>';
+                filteredData.forEach(row => {
+                    html += '<tr>';
+                    columns.forEach(col => {
+                        const value = row[col];
+                        let displayValue = value;
+                        let cellClass = '';
+
+                        if (value === null || value === undefined) {
+                            displayValue = '';
+                        } else if (typeof value === 'number') {
+                            if (col.includes('coverage')) {
+                                displayValue = value.toFixed(1);
+                            } else {
+                                displayValue = value.toLocaleString();
+                            }
+                            cellClass = 'number-cell';
+                        }
+
+                        html += `<td class="${cellClass}">${displayValue}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody>';
+
+                // Empty row for spacing (like in ODS)
+                html += '<tr class="empty-row"><td colspan="' + columns.length + '"></td></tr>';
+
+                html += '</table>';
+            } else {
+                html += '<div class="loading">No data available</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function filterColumn(input, columnName) {
+            const filterValue = input.value.toLowerCase();
+
+            if (!currentTableData || !currentTableData.data) return;
+
+            // Apply filter
+            filteredData = currentTableData.data.filter(row => {
+                const cellValue = String(row[columnName] || '').toLowerCase();
+                return cellValue.includes(filterValue);
+            });
+
+            // Re-render table
+            renderTable(currentTableData);
+        }
+
+        function clearFilters() {
+            if (!currentTableData) return;
+
+            filteredData = currentTableData.data;
+            renderTable(currentTableData);
+
+            // Clear all input fields
+            document.querySelectorAll('th input').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        function exportTable() {
+            if (!filteredData || filteredData.length === 0) {
+                alert('No data to export. Please load a table first.');
+                return;
+            }
+
+            // Convert to CSV
+            const columns = Object.keys(filteredData[0]);
+            let csv = columns.join(',') + '\n';
+
+            filteredData.forEach(row => {
+                const values = columns.map(col => {
+                    const val = row[col];
+                    if (val === null || val === undefined) return '';
+                    if (typeof val === 'string' && val.includes(',')) return `"${val}"`;
+                    return val;
+                });
+                csv += values.join(',') + '\n';
+            });
+
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `vaccination_table_${new Date().getTime()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Auto-load table on page load
+        window.onload = function() {
+            loadTable();
+        };
+    </script>
+</body>
+</html>

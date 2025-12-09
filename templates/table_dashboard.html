@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccination Coverage Tables - NHS Digital Format</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: #005eb8;
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: normal;
+        }
+
+        .header p {
+            margin-top: 8px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .control-group select,
+        .control-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #d8dde6;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: #005eb8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #004a94;
+        }
+
+        .btn-secondary {
+            background: #41b6e6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #2a9cc8;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #005eb8;
+            color: white;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .table-info {
+            padding: 15px 20px;
+            background: #f0f4f5;
+            border-bottom: 1px solid #d8dde6;
+            font-size: 13px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f0f4f5;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #005eb8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e8edee;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .code-col {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .number-col {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .coverage-good {
+            color: #007f3b;
+            font-weight: 600;
+        }
+
+        .coverage-warning {
+            color: #ed8b00;
+            font-weight: 600;
+        }
+
+        .coverage-low {
+            color: #da291c;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #768692;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #005eb8;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #d8dde6;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: #f0f4f5;
+            font-size: 14px;
+            font-weight: 600;
+            color: #005eb8;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: #005eb8;
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: #e0e8ed;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 20px;
+            background: #f0f4f5;
+            border-radius: 4px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #768692;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #005eb8;
+        }
+
+        .footnote {
+            font-size: 11px;
+            color: #768692;
+            padding: 15px 20px;
+            background: #f9fafb;
+            border-top: 1px solid #e8edee;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>Vaccination Coverage Statistics</h1>
+            <p>Annual data tables - Upper Tier Local Authority (UTLA) and Regional coverage</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="cohort-select">Age Cohort:</label>
+                    <select id="cohort-select">
+                        <option value="24 months">24 months</option>
+                        <option value="12 months">12 months</option>
+                        <option value="5 years">5 years</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="year-select">Year:</label>
+                    <input type="number" id="year-select" value="2024" min="2008" max="2024">
+                </div>
+                <div class="control-group">
+                    <button class="btn-primary" onclick="loadUTLATable()">Load UTLA Table</button>
+                </div>
+                <div class="control-group">
+                    <button class="btn-secondary" onclick="exportTableToCSV()">Export to CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('utla')">UTLA Coverage</button>
+            <button class="tab" onclick="showTab('regional')">Regional Time Series</button>
+            <button class="tab" onclick="showTab('summary')">England Summary</button>
+        </div>
+
+        <!-- UTLA Table Tab -->
+        <div id="utla-tab" class="tab-content active">
+            <div class="table-card">
+                <div class="table-header">
+                    Upper Tier Local Authority (UTLA) Vaccination Coverage
+                </div>
+                <div class="table-info" id="utla-info">
+                    Select cohort and year, then click "Load UTLA Table"
+                </div>
+                <div class="table-container" id="utla-table-container">
+                    <div class="loading">
+                        <p>Select parameters and click "Load UTLA Table" to view data</p>
+                    </div>
+                </div>
+                <div class="footnote">
+                    <strong>Notes:</strong> Coverage percentage calculated as (vaccinated / eligible population) × 100.
+                    Cells may be empty if data is not available for that vaccine/area combination.
+                </div>
+            </div>
+        </div>
+
+        <!-- Regional Table Tab -->
+        <div id="regional-tab" class="tab-content">
+            <div class="table-card">
+                <div class="table-header">
+                    Regional Vaccination Coverage Time Series
+                </div>
+                <div class="table-info" id="regional-info">
+                    Select cohort to view regional trends
+                </div>
+                <div class="table-container" id="regional-table-container">
+                    <div class="loading">
+                        <p>Click the Regional Time Series tab to load data</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- England Summary Tab -->
+        <div id="summary-tab" class="tab-content">
+            <div class="table-card">
+                <div class="table-header">
+                    England-Level Summary Statistics
+                </div>
+                <div class="table-info" id="summary-info">
+                    National vaccination coverage summary
+                </div>
+                <div id="summary-content">
+                    <div class="loading">
+                        <p>Click the England Summary tab to load data</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTableData = [];
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+
+            // Load data for the selected tab
+            if (tabName === 'regional') {
+                loadRegionalTable();
+            } else if (tabName === 'summary') {
+                loadEnglandSummary();
+            }
+        }
+
+        async function loadUTLATable() {
+            const cohort = document.getElementById('cohort-select').value;
+            const year = parseInt(document.getElementById('year-select').value);
+
+            const container = document.getElementById('utla-table-container');
+            const info = document.getElementById('utla-info');
+
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading UTLA data...</p></div>';
+
+            try {
+                const response = await fetch('/api/tables/utla', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({cohort_name: cohort, year: year})
+                });
+
+                const result = await response.json();
+                currentTableData = result.data;
+
+                info.innerHTML = `<strong>Cohort:</strong> ${result.cohort} | <strong>Year:</strong> ${result.year} | <strong>Areas:</strong> ${result.row_count}`;
+
+                if (result.data.length === 0) {
+                    container.innerHTML = '<div class="loading"><p>No data available for selected parameters</p></div>';
+                    return;
+                }
+
+                // Build table
+                renderUTLATable(result.data);
+
+            } catch (error) {
+                container.innerHTML = `<div class="loading"><p style="color: #da291c;">Error loading data: ${error.message}</p></div>`;
+            }
+        }
+
+        function renderUTLATable(data) {
+            if (data.length === 0) return;
+
+            // Get vaccine columns
+            const firstRow = data[0];
+            const vaccineColumns = Object.keys(firstRow).filter(k => k.startsWith('coverage_'));
+
+            let html = '<table><thead><tr>';
+            html += '<th>Code</th>';
+            html += '<th>Local Authority</th>';
+            html += '<th>Region</th>';
+            html += '<th>ODS Code</th>';
+            html += '<th class="number-col">Eligible Population</th>';
+
+            vaccineColumns.forEach(col => {
+                const vaccineName = col.replace('coverage_', '');
+                html += `<th class="number-col">${vaccineName}</th>`;
+            });
+
+            html += '</tr></thead><tbody>';
+
+            data.forEach(row => {
+                html += '<tr>';
+                html += `<td class="code-col">${row.code}</td>`;
+                html += `<td>${row.local_authority}</td>`;
+                html += `<td>${row.region_name}</td>`;
+                html += `<td class="code-col">${row.ods_code}</td>`;
+                html += `<td class="number-col">${row.eligible_population ? row.eligible_population.toLocaleString() : '-'}</td>`;
+
+                vaccineColumns.forEach(col => {
+                    const coverage = row[col];
+                    if (coverage === null || coverage === undefined) {
+                        html += '<td class="number-col">-</td>';
+                    } else {
+                        const cssClass = coverage >= 95 ? 'coverage-good' : coverage >= 85 ? 'coverage-warning' : 'coverage-low';
+                        html += `<td class="number-col ${cssClass}">${coverage.toFixed(1)}%</td>`;
+                    }
+                });
+
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+
+            document.getElementById('utla-table-container').innerHTML = html;
+        }
+
+        async function loadRegionalTable() {
+            const cohort = document.getElementById('cohort-select').value;
+            const container = document.getElementById('regional-table-container');
+            const info = document.getElementById('regional-info');
+
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading regional data...</p></div>';
+
+            try {
+                const response = await fetch('/api/tables/regional', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({cohort_name: cohort})
+                });
+
+                const result = await response.json();
+
+                info.innerHTML = `<strong>Cohort:</strong> ${result.cohort} | <strong>Records:</strong> ${result.row_count}`;
+
+                if (result.data.length === 0) {
+                    container.innerHTML = '<div class="loading"><p>No regional data available</p></div>';
+                    return;
+                }
+
+                renderRegionalTable(result.data);
+
+            } catch (error) {
+                container.innerHTML = `<div class="loading"><p style="color: #da291c;">Error: ${error.message}</p></div>`;
+            }
+        }
+
+        function renderRegionalTable(data) {
+            let html = '<table><thead><tr>';
+            html += '<th>Code</th>';
+            html += '<th>Area Name</th>';
+            html += '<th>Year</th>';
+            html += '<th>Vaccine Code</th>';
+            html += '<th>Vaccine Name</th>';
+            html += '<th class="number-col">Coverage %</th>';
+            html += '<th class="number-col">Vaccinated</th>';
+            html += '<th class="number-col">Eligible</th>';
+            html += '</tr></thead><tbody>';
+
+            data.forEach(row => {
+                html += '<tr>';
+                html += `<td class="code-col">${row.code}</td>`;
+                html += `<td>${row.area_name}</td>`;
+                html += `<td>${row.year}</td>`;
+                html += `<td class="code-col">${row.vaccine_code}</td>`;
+                html += `<td>${row.vaccine_name}</td>`;
+
+                const coverage = row.coverage_percentage;
+                const cssClass = coverage >= 95 ? 'coverage-good' : coverage >= 85 ? 'coverage-warning' : 'coverage-low';
+                html += `<td class="number-col ${cssClass}">${coverage.toFixed(1)}%</td>`;
+                html += `<td class="number-col">${row.vaccinated_count ? row.vaccinated_count.toLocaleString() : '-'}</td>`;
+                html += `<td class="number-col">${row.eligible_population ? row.eligible_population.toLocaleString() : '-'}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+
+            document.getElementById('regional-table-container').innerHTML = html;
+        }
+
+        async function loadEnglandSummary() {
+            const cohort = document.getElementById('cohort-select').value;
+            const year = parseInt(document.getElementById('year-select').value);
+            const container = document.getElementById('summary-content');
+            const info = document.getElementById('summary-info');
+
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading England summary...</p></div>';
+
+            try {
+                const response = await fetch('/api/tables/england-summary', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({cohort_name: cohort, year: year})
+                });
+
+                const result = await response.json();
+
+                info.innerHTML = `<strong>Area:</strong> ${result.area_name || 'England'} | <strong>Cohort:</strong> ${result.cohort} | <strong>Year:</strong> ${result.year}`;
+
+                if (!result.vaccines || result.vaccines.length === 0) {
+                    container.innerHTML = '<div class="loading"><p>No summary data available</p></div>';
+                    return;
+                }
+
+                renderEnglandSummary(result);
+
+            } catch (error) {
+                container.innerHTML = `<div class="loading"><p style="color: #da291c;">Error: ${error.message}</p></div>`;
+            }
+        }
+
+        function renderEnglandSummary(data) {
+            let html = '<div class="summary-grid">';
+
+            data.vaccines.forEach(vaccine => {
+                const coverage = vaccine.coverage_percentage;
+                const cssClass = coverage >= 95 ? 'coverage-good' : coverage >= 85 ? 'coverage-warning' : 'coverage-low';
+
+                html += '<div class="summary-item">';
+                html += `<div class="summary-label">${vaccine.vaccine_name}</div>`;
+                html += `<div class="summary-value ${cssClass}">${coverage.toFixed(1)}%</div>`;
+                html += `<div style="font-size: 12px; color: #768692; margin-top: 8px;">`;
+                html += `${vaccine.eligible_population ? vaccine.eligible_population.toLocaleString() : 'N/A'} eligible`;
+                html += '</div>';
+                html += '</div>';
+            });
+
+            html += '</div>';
+
+            document.getElementById('summary-content').innerHTML = html;
+        }
+
+        async function exportTableToCSV() {
+            if (currentTableData.length === 0) {
+                alert('Please load a table first before exporting');
+                return;
+            }
+
+            const cohort = document.getElementById('cohort-select').value;
+            const year = document.getElementById('year-select').value;
+
+            try {
+                const response = await fetch('/api/export/csv', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        vaccine_code: 'ALL',
+                        cohort_name: cohort
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.download_url) {
+                    window.open(result.download_url, '_blank');
+                }
+            } catch (error) {
+                alert('Error exporting: ' + error.message);
+            }
+        }
+
+        // Auto-load UTLA table on page load
+        window.onload = function() {
+            loadUTLATable();
+        };
+    </script>
+</body>
+</html>
