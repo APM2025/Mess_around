@@ -59,13 +59,18 @@
             position: relative;
         }
 
-        th input {
+        th input,
+        th select {
             width: 100%;
             margin-top: 5px;
             padding: 4px;
             font-size: 9pt;
             border: 1px solid #ccc;
             border-radius: 3px;
+        }
+
+        th select {
+            max-height: 150px;
         }
 
         td {
@@ -266,6 +271,57 @@
             font-size: 14pt;
             font-weight: bold;
             color: #2c5282;
+        }
+
+        /* Custom dropdown filter styles */
+        .filter-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .filter-dropdown-toggle {
+            width: 100%;
+            padding: 4px;
+            font-size: 9pt;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .filter-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            margin-top: 2px;
+        }
+
+        .filter-dropdown-menu.show {
+            display: block;
+        }
+
+        .filter-option {
+            padding: 4px 8px;
+            font-size: 9pt;
+            cursor: pointer;
+        }
+
+        .filter-option:hover {
+            background: #f0f4f5;
+        }
+
+        .filter-option input[type="checkbox"] {
+            margin-right: 6px;
         }
     </style>
 </head>
@@ -647,11 +703,46 @@
                 });
                 html += '\u003c/tr\u003e\u003ctr\u003e';
 
-                // Filter row
+                // Filter row with custom dropdowns
                 columns.forEach(col => {
-                    html += `\u003cth style="font-weight: normal; padding: 4px;"\u003e
-                        \u003cinput type="text" placeholder="Filter..." data-column="${col}" onkeyup="filterColumn(this, '${col}')" /\u003e
-                    \u003c/th\u003e`;
+                    // Check if this is a vaccine data column (no filtering on these)
+                    const isVaccineColumn = col.includes('coverage') || col.includes('vaccinated') || col.includes('number_aged') || col.includes('eligible');
+
+                    if (isVaccineColumn) {
+                        // No filter for vaccine columns
+                        html += `\u003cth style=\"font-weight: normal; padding: 4px;\"\u003e\u003c/th\u003e`;
+                    } else {
+                        // Get unique values for this column
+                        const uniqueValues = [...new Set(
+                            filteredData
+                                .map(row => row[col])
+                                .filter(val => val !== null && val !== undefined && val !== '')
+                                .map(val => typeof val === 'number' ? val.toFixed(1) : String(val))
+                        )].sort();
+
+                        if (uniqueValues.length > 50) {
+                            // For huge value lists, use text input
+                            html += `\u003cth style=\"font-weight: normal; padding: 4px;\"\u003e
+                                \u003cinput type=\"text\" placeholder=\"Filter...\" data-column=\"${col}\" onkeyup=\"filterColumn(this, '${col}')\" /\u003e
+                            \u003c/th\u003e`;
+                        } else {
+                            // For categorical columns, use custom dropdown with checkboxes
+                            const dropdownId = `filter-${col.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                            html += `\u003cth style=\"font-weight: normal; padding: 4px;\"\u003e
+                                \u003cdiv class=\"filter-dropdown\" data-column=\"${col}\"\u003e
+                                    \u003cbutton type=\"button\" class=\"filter-dropdown-toggle\" onclick=\"toggleFilterDropdown('${dropdownId}')\"\u003e
+                                        Select... \u003cspan class=\"filter-count\"\u003e\u003c/span\u003e
+                                    \u003c/button\u003e
+                                    \u003cdiv id=\"${dropdownId}\" class=\"filter-dropdown-menu\"\u003e`;
+                            uniqueValues.forEach(val => {
+                                const safeVal = val.replace(/"/g, '&quot;');
+                                html += `\u003cdiv class=\"filter-option\"\u003e
+                                    \u003clabel\u003e\u003cinput type=\"checkbox\" value=\"${safeVal}\" onchange=\"applyDropdownFilter('${col}')\"\u003e ${val}\u003c/label\u003e
+                                \u003c/div\u003e`;
+                            });
+                            html += `\u003c/div\u003e\u003c/div\u003e\u003c/th\u003e`;
+                        }
+                    }
                 });
                 html += '\u003c/tr\u003e\u003c/thead\u003e';
 
@@ -711,44 +802,150 @@
             autoGenerateTableVisualization();
         }
 
-        function filterColumn(input, columnName) {
-            const filterValue = input.value.toLowerCase();
+        function toggleFilterDropdown(dropdownId) {
+            // Close all other dropdowns
+            document.querySelectorAll('.filter-dropdown-menu').forEach(menu => {
+                if (menu.id !== dropdownId) {
+                    menu.classList.remove('show');
+                }
+            });
 
+            // Toggle this dropdown
+            const menu = document.getElementById(dropdownId);
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+        }
+
+        function applyDropdownFilter(columnName) {
+            filterColumn(null, columnName);
+        }
+
+        function updateDropdownButtonText(columnName) {
+            const dropdown = document.querySelector(`.filter-dropdown[data-column="${columnName}"]`);
+            if (!dropdown) return;
+
+            const button = dropdown.querySelector('.filter-dropdown-toggle');
+            const checkedCount = dropdown.querySelectorAll('input[type="checkbox"]:checked').length;
+
+            if (checkedCount === 0) {
+                button.innerHTML = 'Select... <span class="filter-count"></span>';
+            } else {
+                button.innerHTML = `Select... <span class="filter-count">(${checkedCount})</span>`;
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.filter-dropdown')) {
+                document.querySelectorAll('.filter-dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+
+        // Store current filter state
+        let currentFilters = {};
+
+        function filterColumn(input, columnName) {
             if (!currentTableData || !currentTableData.data) return;
 
-            // Get all filter inputs
-            const allFilters = {};
-            document.querySelectorAll('th input').forEach(inp => {
+            // Collect all current filters (both text inputs and multi-selects)
+            currentFilters = {};
+
+            // Text inputs
+            document.querySelectorAll('th input[data-column]').forEach(inp => {
                 const col = inp.getAttribute('data-column');
-                if (col && inp.value) {
-                    allFilters[col] = inp.value.toLowerCase();
+                if (col && inp.value.trim()) {
+                    currentFilters[col] = {
+                        type: 'text',
+                        value: inp.value.toLowerCase().trim()
+                    };
+                }
+            });
+
+            // Checkbox dropdowns
+            document.querySelectorAll('.filter-dropdown[data-column]').forEach(dropdown => {
+                const col = dropdown.getAttribute('data-column');
+                const checkedBoxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
+                const selectedValues = Array.from(checkedBoxes).map(cb => cb.value);
+                if (col && selectedValues.length > 0) {
+                    currentFilters[col] = {
+                        type: 'multiselect',
+                        values: selectedValues
+                    };
                 }
             });
 
             // Apply all filters
             filteredData = currentTableData.data.filter(row => {
-                for (const [col, filterVal] of Object.entries(allFilters)) {
-                    const cellValue = String(row[col] || '').toLowerCase();
-                    if (!cellValue.includes(filterVal)) {
-                        return false;
+                for (const [col, filter] of Object.entries(currentFilters)) {
+                    const cellValue = row[col];
+                    const cellStr = cellValue !== null && cellValue !== undefined ?
+                        (typeof cellValue === 'number' ? cellValue.toFixed(1) : String(cellValue)) : '';
+
+                    if (filter.type === 'text') {
+                        if (!cellStr.toLowerCase().includes(filter.value)) {
+                            return false;
+                        }
+                    } else if (filter.type === 'multiselect') {
+                        if (!filter.values.includes(cellStr)) {
+                            return false;
+                        }
                     }
                 }
                 return true;
             });
 
-            // Re-render table
+            // Re-render table and restore filter state
             renderTable(currentTableData);
+            restoreFilters();
+        }
+
+        function restoreFilters() {
+            // Restore text input values
+            document.querySelectorAll('th input[data-column]').forEach(inp => {
+                const col = inp.getAttribute('data-column');
+                if (currentFilters[col] && currentFilters[col].type === 'text') {
+                    inp.value = currentFilters[col].value;
+                }
+            });
+
+            // Restore checkbox selections in dropdowns
+            document.querySelectorAll('.filter-dropdown[data-column]').forEach(dropdown => {
+                const col = dropdown.getAttribute('data-column');
+                if (currentFilters[col] && currentFilters[col].type === 'multiselect') {
+                    const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => {
+                        cb.checked = currentFilters[col].values.includes(cb.value);
+                    });
+                    updateDropdownButtonText(col);
+                }
+            });
         }
 
         function clearFilters() {
             if (!currentTableData) return;
 
+            // Reset filter state
+            currentFilters = {};
             filteredData = currentTableData.data;
             renderTable(currentTableData);
 
             // Clear all input fields
             document.querySelectorAll('th input').forEach(input => {
                 input.value = '';
+            });
+
+            // Clear all checkbox dropdowns
+            document.querySelectorAll('.filter-dropdown input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+
+            // Update all dropdown button texts
+            document.querySelectorAll('.filter-dropdown[data-column]').forEach(dropdown => {
+                const col = dropdown.getAttribute('data-column');
+                updateDropdownButtonText(col);
             });
         }
 

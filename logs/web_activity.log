@@ -477,3 +477,39 @@
 [2025-12-09 22:29:12] VISUALIZE: table_comparison | table=table1, areas=5
 [2025-12-09 22:29:26] QUERY: utla_table | cohort=12 months, year=2024
 [2025-12-09 22:29:35] VISUALIZE: table_comparison | table=table4, areas=1
+[2025-12-09 22:30:11] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 22:30:11] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:33:32] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 22:34:02] UPDATE: row | area=E09000003, updates=4
+[2025-12-09 22:34:04] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 22:34:08] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 22:35:51] QUERY: utla_table | cohort=24 months, year=2024
+[2025-12-09 22:36:20] VIEW: dashboard | ods_tables
+[2025-12-09 22:36:22] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 22:36:22] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:36:25] VISUALIZE: table_comparison | table=table1, areas=1
+[2025-12-09 22:37:03] VISUALIZE: table_comparison | table=table1, areas=4
+[2025-12-09 22:37:13] VISUALIZE: table_comparison | table=table1, areas=4
+[2025-12-09 22:37:16] VISUALIZE: table_comparison | table=table1, areas=4
+[2025-12-09 22:37:20] VISUALIZE: table_comparison | table=table1, areas=4
+[2025-12-09 22:37:49] VIEW: dashboard | ods_tables
+[2025-12-09 22:37:50] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 22:37:50] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:37:58] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:38:05] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 22:38:24] VIEW: dashboard | ods_tables
+[2025-12-09 22:38:24] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 22:38:24] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:38:27] VISUALIZE: table_comparison | table=table1, areas=3
+[2025-12-09 22:39:49] VIEW: dashboard | ods_tables
+[2025-12-09 22:39:49] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 22:39:49] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:39:53] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 22:40:14] VIEW: dashboard | ods_tables
+[2025-12-09 22:40:14] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 22:40:15] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:41:15] QUERY: utla_table | cohort=12 months, year=2024
+[2025-12-09 22:42:01] VIEW: dashboard | ods_tables
+[2025-12-09 22:42:01] QUERY: table1_uk_by_country | cohort=12 months, year=2024
+[2025-12-09 22:42:01] VISUALIZE: table_comparison | table=table1, areas=5
+[2025-12-09 22:42:07] VISUALIZE: table_comparison | table=table1, areas=1
