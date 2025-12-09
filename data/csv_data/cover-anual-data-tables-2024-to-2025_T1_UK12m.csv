@@ -1,0 +1,10 @@
+"Table 1. Completed primary immunisations in children aged 12 months in the UK, by country",Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6
+This worksheet contains one table. Some cells may refer to notes which can be found on the Notes worksheet.,,,,,,
+[z] not applicable,,,,,,
+[note 23],"Please note that system changes in 14 UTLAs in London earlier this year, as well as changes to the way multiple dose courses are calculated, mean that the coverage in London for some vaccines, particularly the pre-school (dTaP/IPV) booster and MMR2 is likely to be underestimated. Reported falls in coverage in these vaccines in the current year should not be used for local vaccination performance management or in isolation to direct public health action. Please see the data sources and methodology section for more information. Additionally, until data on children not registered with a GP can be validated, only children registered with a GP are included in the London-, England-, and UK-level figures. The affected UTLAs are Greenwich, Hammersmith and Fulham, Kensington and Chelsea, Lambeth, Lewisham, Southwark, Westminster, Bexley, Brent, Bromley, Ealing, Harrow, Hillingdon, and Hounslow. Coverage in these UTLAs will be higher than coverage measured when including the unregistered population. However, these coverage estimates will more closely reflect the true coverage in the population until the data on children not registered with a GP is fully validated.",,,,,
+Geographic area,Note,Number aged 12 months,Coverage at 12 months DTaP/IPV/Hib/HepB (%),Coverage at 12 months PCV1 (%),Coverage at 12 months rota (%),Coverage at 12 months MenB (%)
+United Kingdom,[note 23],"668,160",91.7,93.4,89.1,91.3
+England,[note 23],"573,740",91.3,93.1,88.8,91
+Northern Ireland,[z],20017,91,93.7,88,91
+Scotland,[z],46687,94.5,95.4,92.2,94
+Wales,[z],27716,94.1,95.7,92,93.8

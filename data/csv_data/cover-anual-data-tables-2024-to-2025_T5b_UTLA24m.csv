@@ -1,0 +1,167 @@
+"Table 5b. Completed primary immunisations in children aged 24 months in England by upper tier local authority (UTLA), number",Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9,Unnamed: 10
+This worksheet contains one table. Some cells may refer to notes which can be found on the Notes worksheet.,,,,,,,,,,
+[z] not applicable,,,,,,,,,,
+[note 18],City of London is included in Hackney.,,,,,,,,,
+[note 19],Isles of Scilly is included in Cornwall.,,,,,,,,,
+[note 20],Rutland is included in Leicestershire.,,,,,,,,,
+[note 23],"Please note that system changes in 14 UTLAs in London earlier this year, as well as changes to the way multiple dose courses are calculated, mean that the coverage in London for some vaccines, particularly the pre-school (dTaP/IPV) booster and MMR2 is likely to be underestimated. Reported falls in coverage in these vaccines in the current year should not be used for local vaccination performance management or in isolation to direct public health action. Please see the data sources and methodology section for more information. Additionally, until data on children not registered with a GP can be validated, only children registered with a GP are included in the London-, England-, and UK-level figures. The affected UTLAs are Greenwich, Hammersmith and Fulham, Kensington and Chelsea, Lambeth, Lewisham, Southwark, Westminster, Bexley, Brent, Bromley, Ealing, Harrow, Hillingdon, and Hounslow. Coverage in these UTLAs will be higher than coverage measured when including the unregistered population. However, these coverage estimates will more closely reflect the true coverage in the population until the data on children not registered with a GP is fully validated.",,,,,,,,,
+Code,Local authority,Region name,Organisation Data Service code,Note,Number aged 24 months,Number aged 24 months vaccinated DTaP/IPV/Hib/HepB Prim vaccinated,Number aged 24 months vaccinated MMR1,Number aged 24 months vaccinated Hib/MenC booster,Number aged 24 months vaccinated PCV booster,Number aged 24 months vaccinated MenB booster
+E92000001,[z],England,[z],[note 23],591605,547129,525770,524056,520832,516639
+E12000004,[z],East Midlands,[z],[z],48773,45833,44238,44130,43948,43702
+E10000019,Lincolnshire,East Midlands,503,[z],6699,6241,6047,6008,6021,5974
+E10000007,Derbyshire,East Midlands,506,[z],7180,6972,6857,6855,6859,6837
+E06000015,Derby,East Midlands,507,[z],3325,3124,2960,2950,2919,2904
+E10000018,Leicestershire,East Midlands,508,[note 19],7211,6907,6782,6774,6753,6713
+E06000016,Leicester,East Midlands,509,[z],4334,4031,3832,3818,3735,3726
+E10000024,Nottinghamshire,East Midlands,511,[z],7835,7425,7191,7170,7173,7118
+E06000018,Nottingham,East Midlands,512,[z],3448,3030,2825,2819,2802,2765
+E06000062,West Northamptonshire,East Midlands,U6Q5Z,[z],4713,4317,4084,4068,4036,4028
+E06000061,North Northamptonshire,East Midlands,Z9D4Z,[z],4028,3786,3660,3668,3650,3637
+E12000006,[z],East of England,[z],[z],65689,61399,59642,59963,59243,58245
+E10000015,Hertfordshire,East of England,606,[z],12904,11906,11586,11680,11592,11363
+E10000020,Norfolk,East of England,607,[z],7654,7301,7158,7168,7093,6986
+E10000029,Suffolk,East of England,609,[z],6998,6677,6553,6577,6514,6428
+E06000032,Luton,East of England,611,[z],3592,3171,3034,3055,2946,2820
+E10000012,Essex,East of England,620,[z],15824,14867,14365,14427,14276,14108
+E06000033,Southend-on-Sea,East of England,621,[z],1858,1729,1691,1703,1675,1655
+E06000034,Thurrock,East of England,622,[z],2208,1997,1870,1899,1869,1848
+E10000003,Cambridgeshire,East of England,623,[z],6669,6383,6254,6272,6208,6109
+E06000031,Peterborough,East of England,624,[z],2506,2254,2132,2163,2092,2028
+E06000055,Bedford,East of England,625,[z],2138,1983,1916,1927,1902,1864
+E06000056,Central Bedfordshire,East of England,626,[z],3338,3131,3083,3092,3076,3036
+E12000007,[z],London,[z],[note 23],104473,91046,84424,83791,82781,81996
+E09000007,Camden,London,702,[z],2187,1922,1762,1741,1718,1724
+E09000011,Greenwich,London,703,[note 23],3446,3072,2885,2864,2822,2798
+E09000012,Hackney,London,704,[note 18],3729,2532,2436,2268,2308,2161
+E09000013,Hammersmith and Fulham,London,705,[note 23],2127,1743,1594,1579,1556,1469
+E09000019,Islington,London,706,[z],2220,1938,1701,1714,1709,1688
+E09000020,Kensington and Chelsea,London,707,[note 23],1910,1424,1405,1344,1313,1204
+E09000022,Lambeth,London,708,[note 23],3370,2937,2696,2690,2675,2638
+E09000023,Lewisham,London,709,[note 23],3562,3173,3039,3012,2995,2940
+E09000028,Southwark,London,710,[note 23],2941,2558,2364,2348,2324,2295
+E09000030,Tower Hamlets,London,711,[z],3671,3268,2997,3011,2996,2979
+E09000032,Wandsworth,London,712,[z],3750,3365,3165,3109,3114,3102
+E09000033,Westminster,London,713,[note 23],1368,1094,1014,995,960,932
+E09000002,Barking and Dagenham,London,716,[z],3353,2956,2667,2673,2622,2654
+E09000003,Barnet,London,717,[z],4713,4133,3838,3815,3795,3737
+E09000004,Bexley,London,718,[note 23],2802,2586,2401,2401,2382,2388
+E09000005,Brent,London,719,[note 23],4227,3635,3284,3269,3200,3175
+E09000006,Bromley,London,720,[note 23],3453,3199,3045,3041,3011,2994
+E09000008,Croydon,London,721,[z],4873,4189,3922,3898,3842,3790
+E09000009,Ealing,London,722,[note 23],4584,4126,3823,3836,3747,3711
+E09000010,Enfield,London,723,[z],3877,3240,2832,2846,2821,2764
+E09000014,Haringey,London,724,[z],3179,2717,2465,2472,2447,2421
+E09000015,Harrow,London,725,[note 23],2986,2572,2340,2329,2292,2264
+E09000016,Havering,London,726,[z],3456,3129,2952,2925,2917,2901
+E09000017,Hillingdon,London,727,[note 23],3679,3353,3157,3113,3032,3031
+E09000018,Hounslow,London,728,[note 23],3386,2897,2739,2734,2626,2524
+E09000021,Kingston upon Thames,London,729,[z],1878,1721,1674,1640,1639,1634
+E09000024,Merton,London,730,[z],2106,1888,1807,1772,1781,1738
+E09000025,Newham,London,731,[z],5606,4862,4469,4454,4365,4356
+E09000026,Redbridge,London,732,[z],4397,3882,3595,3588,3516,3537
+E09000027,Richmond upon Thames,London,733,[z],1813,1661,1415,1376,1382,1568
+E09000029,Sutton,London,734,[z],2040,1887,1789,1785,1756,1760
+E09000031,Waltham Forest,London,735,[z],3784,3387,3152,3149,3118,3119
+E12000001,[z],North East,[z],[z],25518,24451,23954,23934,23864,23734
+E08000037,Gateshead,North East,106,[z],"  1,896","  1,812","  1,778","  1,762","  1,759","  1,738"
+E08000023,South Tyneside,North East,109,[z],"  1,485","  1,439","  1,421","  1,428","  1,429","  1,421"
+E08000024,Sunderland,North East,110,[z],"  2,610","  2,531","  2,510","  2,514","  2,502","  2,490"
+E06000057,Northumberland,North East,104,[z],2765,2688,2629,2629,2628,2626
+E08000021,Newcastle upon Tyne,North East,107,[z],2939,2763,2675,2659,2646,2625
+E08000022,North Tyneside,North East,108,[z],2004,1949,1930,1925,1923,1920
+E06000001,Hartlepool,North East,111,[z],970,907,895,895,895,889
+E06000002,Middlesbrough,North East,112,[z],1807,1672,1600,1597,1586,1567
+E06000003,Redcar and Cleveland,North East,113,[z],1302,1245,1216,1217,1213,1204
+E06000004,Stockton-on-Tees,North East,114,[z],1969,1866,1821,1822,1815,1799
+E06000047,County Durham,North East,116,[z],4726,4588,4507,4514,4508,4490
+E06000005,Darlington,North East,117,[z],1045,991,972,972,960,965
+E12000002,[z],North West,[z],[z],79405,72954,70597,70280,69896,69048
+E10000006,Cumbria,North West,102,[z],4176,4006,4004,4010,3985,3964
+E08000001,Bolton,North West,304,[z],3831,3549,3460,3429,3402,3367
+E08000002,Bury,North West,305,[z],2133,1957,1896,1881,1868,1848
+E08000003,Manchester,North West,306,[z],7182,6327,5832,5800,5716,5628
+E08000004,Oldham,North West,307,[z],3174,2886,2814,2801,2781,2707
+E08000005,Rochdale,North West,308,[z],2947,2700,2642,2630,2617,2578
+E08000006,Salford,North West,309,[z],3575,3181,3045,2983,2976,2903
+E08000007,Stockport,North West,310,[z],3156,2988,2920,2902,2906,2896
+E08000008,Tameside,North West,311,[z],2386,2212,2105,2096,2092,2067
+E08000009,Trafford,North West,312,[z],2213,2089,2004,1991,1989,1966
+E08000010,Wigan,North West,313,[z],3611,3437,3374,3368,3360,3349
+E08000011,Knowsley,North West,315,[z],1842,1593,1459,1454,1448,1432
+E08000012,Liverpool,North West,316,[z],5463,4713,4404,4383,4362,4280
+E08000014,Sefton,North West,317,[z],2413,2184,2078,2074,2077,2046
+E08000013,St. Helens,North West,318,[z],1959,1848,1792,1792,1791,1770
+E08000015,Wirral,North West,319,[z],3077,2896,2795,2791,2782,2754
+E06000006,Halton,North West,321,[z],1218,1130,1089,1091,1093,1087
+E06000007,Warrington,North West,322,[z],2009,1908,1876,1872,1863,1855
+E10000017,Lancashire,North West,323,[z],12056,11071,10898,10860,10752,10623
+E06000008,Blackburn with Darwen,North West,324,[z],2089,1838,1844,1830,1804,1763
+E06000009,Blackpool,North West,325,[z],1618,1523,1483,1480,1470,1449
+E06000049,Cheshire East,North West,326,[z],3897,3703,3631,3612,3623,3592
+E06000050,Cheshire West and Chester,North West,327,[z],3380,3215,3152,3150,3139,3124
+E12000008,[z],South East,[z],[z],94401,89147,86638,86211,86046,85913
+E10000025,Oxfordshire,South East,608,[z],7639,7313,7163,6957,7124,7056
+E06000042,Milton Keynes,South East,613,[z],3083,2896,2831,2839,2787,2734
+E06000036,Bracknell Forest,South East,614,[z],1405,1329,1293,1285,1295,1282
+E06000037,West Berkshire,South East,615,[z],1475,1428,1405,1385,1404,1388
+E06000038,Reading,South East,616,[z],2483,2295,2224,2173,2212,2156
+E06000039,Slough,South East,617,[z],2384,2205,2104,2091,2073,2044
+E06000040,Windsor and Maidenhead,South East,618,[z],1499,1429,1388,1377,1388,1374
+E06000041,Wokingham,South East,619,[z],1535,1467,1448,1435,1446,1437
+E06000046,Isle of Wight,South East,803,[z],1035,973,955,953,940,970
+E10000030,Surrey,South East,805,[z],12189,11503,11181,11151,11097,11059
+E10000032,West Sussex,South East,807,[z],8327,7883,7671,7663,7578,7620
+E10000014,Hampshire,South East,812,[z],13153,12729,12426,12387,12368,12611
+E06000044,Portsmouth,South East,813,[z],2171,2070,2007,2006,1981,2001
+E06000045,Southampton,South East,814,[z],2969,2790,2697,2669,2655,2727
+E10000011,East Sussex,South East,815,[z],4514,4179,4063,4056,4044,4013
+E06000043,Brighton and Hove,South East,816,[z],2083,1918,1874,1927,1857,1833
+E10000016,Kent,South East,820,[z],16865,15768,15207,15230,15146,15020
+E06000035,Medway,South East,821,[z],3670,3383,3268,3260,3240,3206
+E06000060,Buckinghamshire,South East,916,[z],5922,5589,5433,5367,5411,5382
+E12000009,[z],South West,[z],[z],50618,48039,46809,46626,46581,46285
+E06000058,"Bournemouth, Christchurch and Poole",South West,738,[z],"  3,588","  3,366","  3,251","  3,232","  3,220","  3,208"
+E06000059,Dorset,South West,809,[z],2509,2405,2360,2353,2349,2339
+E06000054,Wiltshire,South West,817,[z],4691,4481,4420,4401,4391,4377
+E06000030,Swindon,South West,819,[z],2524,2388,2318,2312,2298,2287
+E06000052,Cornwall,South West,902,[note 19],4621,4332,4218,4194,4189,4156
+E10000013,Gloucestershire,South West,904,[z],6155,5853,5724,5705,5708,5665
+E06000066,Somerset,South West,905,[z],5119,4844,4727,4714,4706,4680
+E06000022,Bath and North East Somerset,South West,908,[z],1757,1678,1645,1639,1636,1634
+E06000023,Bristol,South West,909,[z],5107,4731,4489,4448,4491,4422
+E06000024,North Somerset,South West,910,[z],1968,1893,1853,1850,1844,1844
+E06000025,South Gloucestershire,South West,911,[z],2693,2591,2514,2501,2500,2479
+E10000008,Devon,South West,912,[z],6234,5960,5857,5845,5841,5804
+E06000026,Plymouth,South West,913,[z],2625,2543,2496,2494,2473,2461
+E06000027,Torbay,South West,914,[z],1027,974,937,938,935,929
+E12000005,[z],West Midlands,[z],[z],66144,61259,58596,58370,57977,57462
+E10000031,Warwickshire,West Midlands,404,[z],6161,5871,5713,5687,5664,5636
+E08000025,Birmingham,West Midlands,406,[z],15010,13057,12030,11991,11881,11708
+E08000026,Coventry,West Midlands,407,[z],4400,4038,3723,3687,3624,3594
+E08000027,Dudley,West Midlands,408,[z],3516,3339,3259,3266,3241,3212
+E08000028,Sandwell,West Midlands,409,[z],4334,3988,3813,3814,3775,3734
+E08000029,Solihull,West Midlands,410,[z],2154,2002,1931,1917,1917,1897
+E08000030,Walsall,West Midlands,411,[z],3651,3421,3298,3284,3256,3216
+E08000031,Wolverhampton,West Midlands,412,[z],3411,3100,2982,2976,2947,2909
+E10000028,Staffordshire,West Midlands,413,[z],8419,8050,7792,7759,7761,7703
+E06000021,Stoke-on-Trent,West Midlands,414,[z],3225,3040,2925,2916,2877,2852
+E06000019,Herefordshire,West Midlands,415,[z],1574,1508,1494,1488,1481,1476
+E10000034,Worcestershire,West Midlands,416,[z],5518,5307,5205,5175,5153,5142
+E06000051,Shropshire,West Midlands,417,[z],2663,2546,2509,2498,2496,2487
+E06000020,Telford and Wrekin,West Midlands,418,[z],2108,1992,1922,1912,1904,1896
+E12000003,[z],Yorkshire and The Humber,[z],[z],56584,53001,50872,50751,50496,50254
+E08000016,Barnsley,Yorkshire and The Humber,204,[z],2615,2535,2489,2482,2466,2474
+E08000017,Doncaster,Yorkshire and The Humber,205,[z],3576,3361,3231,3228,3210,3201
+E08000018,Rotherham,Yorkshire and The Humber,206,[z],2760,2640,2609,2603,2595,2557
+E08000019,Sheffield,Yorkshire and The Humber,207,[z],5825,5463,5232,5224,5191,5146
+E08000032,Bradford,Yorkshire and The Humber,209,[z],6899,6310,5878,5882,5789,5790
+E08000033,Calderdale,Yorkshire and The Humber,210,[z],1994,1849,1792,1783,1770,1759
+E08000034,Kirklees,Yorkshire and The Humber,211,[z],4660,4353,4186,4173,4173,4145
+E08000035,Leeds,Yorkshire and The Humber,212,[z],8648,7735,7303,7274,7242,7160
+E08000036,Wakefield,Yorkshire and The Humber,213,[z],3938,3938,3700,3697,3694,3677
+E06000011,East Riding of Yorkshire,Yorkshire and The Humber,214,[z],2656,2564,2527,2525,2524,2537
+E06000010,Kingston upon Hull,Yorkshire and The Humber,215,[z],3156,2902,2796,2783,2763,2794
+E06000012,North East Lincolnshire,Yorkshire and The Humber,216,[z],1599,1530,1504,1498,1484,1461
+E06000013,North Lincolnshire,Yorkshire and The Humber,217,[z],1660,1523,1481,1465,1468,1459
+E06000065,North Yorkshire,Yorkshire and The Humber,218,[z],4940,4712,4589,4585,4586,4553
+E06000014,York,Yorkshire and The Humber,219,[z],1658,1586,1555,1549,1541,1541

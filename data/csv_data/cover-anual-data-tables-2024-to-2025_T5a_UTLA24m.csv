@@ -1,0 +1,167 @@
+"Table 5a. Completed primary immunisations in children aged 24 months in England by upper tier local authority (UTLA), percentage",Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9,Unnamed: 10
+This worksheet contains one table. Some cells may refer to notes which can be found on the Notes worksheet.,,,,,,,,,,
+[z] not applicable,,,,,,,,,,
+[note 18],City of London is included in Hackney.,,,,,,,,,
+[note 19],Isles of Scilly is included in Cornwall.,,,,,,,,,
+[note 20],Rutland is included in Leicestershire.,,,,,,,,,
+[note 23],"Please note that system changes in 14 UTLAs in London earlier this year, as well as changes to the way multiple dose courses are calculated, mean that the coverage in London for some vaccines, particularly the pre-school (dTaP/IPV) booster and MMR2 is likely to be underestimated. Reported falls in coverage in these vaccines in the current year should not be used for local vaccination performance management or in isolation to direct public health action. Please see the data sources and methodology section for more information. Additionally, until data on children not registered with a GP can be validated, only children registered with a GP are included in the London-, England-, and UK-level figures. The affected UTLAs are Greenwich, Hammersmith and Fulham, Kensington and Chelsea, Lambeth, Lewisham, Southwark, Westminster, Bexley, Brent, Bromley, Ealing, Harrow, Hillingdon, and Hounslow. Coverage in these UTLAs will be higher than coverage measured when including the unregistered population. However, these coverage estimates will more closely reflect the true coverage in the population until the data on children not registered with a GP is fully validated.",,,,,,,,,
+Code,Local authority,Region name,Organisation Data Service code,Note,Number aged 24 months,Coverage at 24 months DTaP/IPV/Hib/HepB Prim (%),Coverage at 24 months MMR1 (%),Coverage at 24 months Hib/MenC booster (%),Coverage at 24 months PCV booster (%),Coverage at 24 months MenB booster (%)
+E92000001,[z],England,[z],[note 23],"591,605",92.5,88.9,88.6,88,87.3
+E12000004,[z],East Midlands,[z],[z],48773,94,90.7,90.5,90.1,89.6
+E10000019,Lincolnshire,East Midlands,503,[z],6699,93.2,90.3,89.7,89.9,89.2
+E10000007,Derbyshire,East Midlands,506,[z],7180,97.1,95.5,95.5,95.5,95.2
+E06000015,Derby,East Midlands,507,[z],3325,94,89,88.7,87.8,87.3
+E10000018,Leicestershire,East Midlands,508,[note 19],7211,95.8,94.1,93.9,93.6,93.1
+E06000016,Leicester,East Midlands,509,[z],4334,93,88.4,88.1,86.2,86
+E10000024,Nottinghamshire,East Midlands,511,[z],7835,94.8,91.8,91.5,91.6,90.8
+E06000018,Nottingham,East Midlands,512,[z],3448,87.9,81.9,81.8,81.3,80.2
+E06000062,West Northamptonshire,East Midlands,U6Q5Z,[z],4713,91.6,86.7,86.3,85.6,85.5
+E06000061,North Northamptonshire,East Midlands,Z9D4Z,[z],4028,94,90.9,91.1,90.6,90.3
+E12000006,[z],East of England,[z],[z],65689,93.5,90.8,91.3,90.2,88.7
+E10000015,Hertfordshire,East of England,606,[z],12904,92.3,89.8,90.5,89.8,88.1
+E10000020,Norfolk,East of England,607,[z],7654,95.4,93.5,93.7,92.7,91.3
+E10000029,Suffolk,East of England,609,[z],6998,95.4,93.6,94,93.1,91.9
+E06000032,Luton,East of England,611,[z],3592,88.3,84.5,85.1,82,78.5
+E10000012,Essex,East of England,620,[z],15824,94,90.8,91.2,90.2,89.2
+E06000033,Southend-on-Sea,East of England,621,[z],1858,93.1,91,91.7,90.2,89.1
+E06000034,Thurrock,East of England,622,[z],2208,90.4,84.7,86,84.6,83.7
+E10000003,Cambridgeshire,East of England,623,[z],6669,95.7,93.8,94,93.1,91.6
+E06000031,Peterborough,East of England,624,[z],2506,89.9,85.1,86.3,83.5,80.9
+E06000055,Bedford,East of England,625,[z],2138,92.8,89.6,90.1,89,87.2
+E06000056,Central Bedfordshire,East of England,626,[z],3338,93.8,92.4,92.6,92.2,91
+E12000007,[z],London,[z],[note 23],104473,87.1,80.8,80.2,79.2,78.5
+E09000007,Camden,London,702,[z],2187,87.9,80.6,79.6,78.6,78.8
+E09000011,Greenwich,London,703,[note 23],3446,89.1,83.7,83.1,81.9,81.2
+E09000012,Hackney,London,704,[note 18],3729,67.9,65.3,60.8,61.9,58
+E09000013,Hammersmith and Fulham,London,705,[note 23],2127,81.9,74.9,74.2,73.2,69.1
+E09000019,Islington,London,706,[z],2220,87.3,76.6,77.2,77,76
+E09000020,Kensington and Chelsea,London,707,[note 23],1910,74.6,73.6,70.4,68.7,63
+E09000022,Lambeth,London,708,[note 23],3370,87.2,80,79.8,79.4,78.3
+E09000023,Lewisham,London,709,[note 23],3562,89.1,85.3,84.6,84.1,82.5
+E09000028,Southwark,London,710,[note 23],2941,87,80.4,79.8,79,78
+E09000030,Tower Hamlets,London,711,[z],3671,89,81.6,82,81.6,81.1
+E09000032,Wandsworth,London,712,[z],3750,89.7,84.4,82.9,83,82.7
+E09000033,Westminster,London,713,[note 23],1368,80,74.1,72.7,70.2,68.1
+E09000002,Barking and Dagenham,London,716,[z],3353,88.2,79.5,79.7,78.2,79.2
+E09000003,Barnet,London,717,[z],4713,87.7,81.4,80.9,80.5,79.3
+E09000004,Bexley,London,718,[note 23],2802,92.3,85.7,85.7,85,85.2
+E09000005,Brent,London,719,[note 23],4227,86,77.7,77.3,75.7,75.1
+E09000006,Bromley,London,720,[note 23],3453,92.6,88.2,88.1,87.2,86.7
+E09000008,Croydon,London,721,[z],4873,86,80.5,80,78.8,77.8
+E09000009,Ealing,London,722,[note 23],4584,90,83.4,83.7,81.7,81
+E09000010,Enfield,London,723,[z],3877,83.6,73,73.4,72.8,71.3
+E09000014,Haringey,London,724,[z],3179,85.5,77.5,77.8,77,76.2
+E09000015,Harrow,London,725,[note 23],2986,86.1,78.4,78,76.8,75.8
+E09000016,Havering,London,726,[z],3456,90.5,85.4,84.6,84.4,83.9
+E09000017,Hillingdon,London,727,[note 23],3679,91.1,85.8,84.6,82.4,82.4
+E09000018,Hounslow,London,728,[note 23],3386,85.6,80.9,80.7,77.6,74.5
+E09000021,Kingston upon Thames,London,729,[z],1878,91.6,89.1,87.3,87.3,87
+E09000024,Merton,London,730,[z],2106,89.6,85.8,84.1,84.6,82.5
+E09000025,Newham,London,731,[z],5606,86.7,79.7,79.5,77.9,77.7
+E09000026,Redbridge,London,732,[z],4397,88.3,81.8,81.6,80,80.4
+E09000027,Richmond upon Thames,London,733,[z],1813,91.6,78,75.9,76.2,86.5
+E09000029,Sutton,London,734,[z],2040,92.5,87.7,87.5,86.1,86.3
+E09000031,Waltham Forest,London,735,[z],3784,89.5,83.3,83.2,82.4,82.4
+E12000001,[z],North East,[z],[z],25518,95.8,93.9,93.8,93.5,93
+E08000037,Gateshead,North East,106,[z],"  1,896",95.6,93.8,92.9,92.8,91.7
+E08000023,South Tyneside,North East,109,[z],"  1,485",96.9,95.7,96.2,96.2,95.7
+E08000024,Sunderland,North East,110,[z],"  2,610",97,96.2,96.3,95.9,95.4
+E06000057,Northumberland,North East,104,[z],2765,97.2,95.1,95.1,95,95
+E08000021,Newcastle upon Tyne,North East,107,[z],2939,94,91,90.5,90,89.3
+E08000022,North Tyneside,North East,108,[z],2004,97.3,96.3,96.1,96,95.8
+E06000001,Hartlepool,North East,111,[z],970,93.5,92.3,92.3,92.3,91.6
+E06000002,Middlesbrough,North East,112,[z],1807,92.5,88.5,88.4,87.8,86.7
+E06000003,Redcar and Cleveland,North East,113,[z],1302,95.6,93.4,93.5,93.2,92.5
+E06000004,Stockton-on-Tees,North East,114,[z],1969,94.8,92.5,92.5,92.2,91.4
+E06000047,County Durham,North East,116,[z],4726,97.1,95.4,95.5,95.4,95
+E06000005,Darlington,North East,117,[z],1045,94.8,93,93,91.9,92.3
+E12000002,[z],North West,[z],[z],79405,91.9,88.9,88.5,88,87
+E10000006,Cumbria,North West,102,[z],4176,95.9,95.9,96,95.4,94.9
+E08000001,Bolton,North West,304,[z],3831,92.6,90.3,89.5,88.8,87.9
+E08000002,Bury,North West,305,[z],2133,91.7,88.9,88.2,87.6,86.6
+E08000003,Manchester,North West,306,[z],7182,88.1,81.2,80.8,79.6,78.4
+E08000004,Oldham,North West,307,[z],3174,90.9,88.7,88.2,87.6,85.3
+E08000005,Rochdale,North West,308,[z],2947,91.6,89.7,89.2,88.8,87.5
+E08000006,Salford,North West,309,[z],3575,89,85.2,83.4,83.2,81.2
+E08000007,Stockport,North West,310,[z],3156,94.7,92.5,92,92.1,91.8
+E08000008,Tameside,North West,311,[z],2386,92.7,88.2,87.8,87.7,86.6
+E08000009,Trafford,North West,312,[z],2213,94.4,90.6,90,89.9,88.8
+E08000010,Wigan,North West,313,[z],3611,95.2,93.4,93.3,93,92.7
+E08000011,Knowsley,North West,315,[z],1842,86.5,79.2,78.9,78.6,77.7
+E08000012,Liverpool,North West,316,[z],5463,86.3,80.6,80.2,79.8,78.3
+E08000014,Sefton,North West,317,[z],2413,90.5,86.1,86,86.1,84.8
+E08000013,St. Helens,North West,318,[z],1959,94.3,91.5,91.5,91.4,90.4
+E08000015,Wirral,North West,319,[z],3077,94.1,90.8,90.7,90.4,89.5
+E06000006,Halton,North West,321,[z],1218,92.8,89.4,89.6,89.7,89.2
+E06000007,Warrington,North West,322,[z],2009,95,93.4,93.2,92.7,92.3
+E10000017,Lancashire,North West,323,[z],12056,91.8,90.4,90.1,89.2,88.1
+E06000008,Blackburn with Darwen,North West,324,[z],2089,88,88.3,87.6,86.4,84.4
+E06000009,Blackpool,North West,325,[z],1618,94.1,91.7,91.5,90.9,89.6
+E06000049,Cheshire East,North West,326,[z],3897,95,93.2,92.7,93,92.2
+E06000050,Cheshire West and Chester,North West,327,[z],3380,95.1,93.3,93.2,92.9,92.4
+E12000008,[z],South East,[z],[z]," 94,401",94.4,91.8,91.3,91.1,91
+E10000025,Oxfordshire,South East,608,[z],7639,95.7,93.8,91.1,93.3,92.4
+E06000042,Milton Keynes,South East,613,[z],3083,93.9,91.8,92.1,90.4,88.7
+E06000036,Bracknell Forest,South East,614,[z],1405,94.6,92,91.5,92.2,91.2
+E06000037,West Berkshire,South East,615,[z],1475,96.8,95.3,93.9,95.2,94.1
+E06000038,Reading,South East,616,[z],2483,92.4,89.6,87.5,89.1,86.8
+E06000039,Slough,South East,617,[z],2384,92.5,88.3,87.7,87,85.7
+E06000040,Windsor and Maidenhead,South East,618,[z],1499,95.3,92.6,91.9,92.6,91.7
+E06000041,Wokingham,South East,619,[z],1535,95.6,94.3,93.5,94.2,93.6
+E06000046,Isle of Wight,South East,803,[z],1035,94,92.3,92.1,90.8,93.7
+E10000030,Surrey,South East,805,[z],12189,94.4,91.7,91.5,91,90.7
+E10000032,West Sussex,South East,807,[z],8327,94.7,92.1,92,91,91.5
+E10000014,Hampshire,South East,812,[z],13153,96.8,94.5,94.2,94,95.9
+E06000044,Portsmouth,South East,813,[z],2171,95.3,92.4,92.4,91.2,92.2
+E06000045,Southampton,South East,814,[z],2969,94,90.8,89.9,89.4,91.8
+E10000011,East Sussex,South East,815,[z],4514,92.6,90,89.9,89.6,88.9
+E06000043,Brighton and Hove,South East,816,[z],2083,92.1,90,92.5,89.2,88
+E10000016,Kent,South East,820,[z],16865,93.5,90.2,90.3,89.8,89.1
+E06000035,Medway,South East,821,[z],3670,92.2,89,88.8,88.3,87.4
+E06000060,Buckinghamshire,South East,916,[z],"  5,922",94.4,91.7,90.6,91.4,90.9
+E12000009,[z],South West,[z],[z],50618,94.9,92.5,92.1,92,91.4
+E06000058,"Bournemouth, Christchurch and Poole",South West,738,[z],"  3,588",93.8,90.6,90.1,89.7,89.4
+E06000059,Dorset,South West,809,[z],2509,95.9,94.1,93.8,93.6,93.2
+E06000054,Wiltshire,South West,817,[z],4691,95.5,94.2,93.8,93.6,93.3
+E06000030,Swindon,South West,819,[z],2524,94.6,91.8,91.6,91,90.6
+E06000052,Cornwall,South West,902,[note 19],4621,93.7,91.3,90.8,90.7,89.9
+E10000013,Gloucestershire,South West,904,[z],6155,95.1,93,92.7,92.7,92
+E06000066,Somerset,South West,905,[z],5119,94.6,92.3,92.1,91.9,91.4
+E06000022,Bath and North East Somerset,South West,908,[z],1757,95.5,93.6,93.3,93.1,93
+E06000023,Bristol,South West,909,[z],5107,92.6,87.9,87.1,87.9,86.6
+E06000024,North Somerset,South West,910,[z],1968,96.2,94.2,94,93.7,93.7
+E06000025,South Gloucestershire,South West,911,[z],2693,96.2,93.4,92.9,92.8,92.1
+E10000008,Devon,South West,912,[z],6234,95.6,94,93.8,93.7,93.1
+E06000026,Plymouth,South West,913,[z],2625,96.9,95.1,95,94.2,93.8
+E06000027,Torbay,South West,914,[z],1027,94.8,91.2,91.3,91,90.5
+E12000005,[z],West Midlands,[z],[z],66144,92.6,88.6,88.2,87.7,86.9
+E10000031,Warwickshire,West Midlands,404,[z],6161,95.3,92.7,92.3,91.9,91.5
+E08000025,Birmingham,West Midlands,406,[z],15010,87,80.1,79.9,79.2,78
+E08000026,Coventry,West Midlands,407,[z],4400,91.8,84.6,83.8,82.4,81.7
+E08000027,Dudley,West Midlands,408,[z],3516,95,92.7,92.9,92.2,91.4
+E08000028,Sandwell,West Midlands,409,[z],4334,92,88,88,87.1,86.2
+E08000029,Solihull,West Midlands,410,[z],2154,92.9,89.6,89,89,88.1
+E08000030,Walsall,West Midlands,411,[z],3651,93.7,90.3,89.9,89.2,88.1
+E08000031,Wolverhampton,West Midlands,412,[z],3411,90.9,87.4,87.2,86.4,85.3
+E10000028,Staffordshire,West Midlands,413,[z],8419,95.6,92.6,92.2,92.2,91.5
+E06000021,Stoke-on-Trent,West Midlands,414,[z],3225,94.3,90.7,90.4,89.2,88.4
+E06000019,Herefordshire,West Midlands,415,[z],1574,95.8,94.9,94.5,94.1,93.8
+E10000034,Worcestershire,West Midlands,416,[z],5518,96.2,94.3,93.8,93.4,93.2
+E06000051,Shropshire,West Midlands,417,[z],2663,95.6,94.2,93.8,93.7,93.4
+E06000020,Telford and Wrekin,West Midlands,418,[z],2108,94.5,91.2,90.7,90.3,89.9
+E12000003,[z],Yorkshire and The Humber,[z],[z],56584,93.7,89.9,89.7,89.2,88.8
+E08000016,Barnsley,Yorkshire and The Humber,204,[z],2615,96.9,95.2,94.9,94.3,94.6
+E08000017,Doncaster,Yorkshire and The Humber,205,[z],3576,94,90.4,90.3,89.8,89.5
+E08000018,Rotherham,Yorkshire and The Humber,206,[z],2760,95.7,94.5,94.3,94,92.6
+E08000019,Sheffield,Yorkshire and The Humber,207,[z],5825,93.8,89.8,89.7,89.1,88.3
+E08000032,Bradford,Yorkshire and The Humber,209,[z],6899,91.5,85.2,85.3,83.9,83.9
+E08000033,Calderdale,Yorkshire and The Humber,210,[z],1994,92.7,89.9,89.4,88.8,88.2
+E08000034,Kirklees,Yorkshire and The Humber,211,[z],4660,93.4,89.8,89.5,89.5,88.9
+E08000035,Leeds,Yorkshire and The Humber,212,[z],8648,89.4,84.4,84.1,83.7,82.8
+E08000036,Wakefield,Yorkshire and The Humber,213,[z],3938,100,94,93.9,93.8,93.4
+E06000011,East Riding of Yorkshire,Yorkshire and The Humber,214,[z],2656,96.5,95.1,95.1,95,95.5
+E06000010,Kingston upon Hull,Yorkshire and The Humber,215,[z],3156,92,88.6,88.2,87.5,88.5
+E06000012,North East Lincolnshire,Yorkshire and The Humber,216,[z],1599,95.7,94.1,93.7,92.8,91.4
+E06000013,North Lincolnshire,Yorkshire and The Humber,217,[z],1660,91.7,89.2,88.3,88.4,87.9
+E06000065,North Yorkshire,Yorkshire and The Humber,218,[z],4940,95.4,92.9,92.8,92.8,92.2
+E06000014,York,Yorkshire and The Humber,219,[z],1658,95.7,93.8,93.4,92.9,92.9

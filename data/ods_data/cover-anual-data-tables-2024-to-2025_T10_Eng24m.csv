@@ -1,0 +1,31 @@
+Table 10. Completed primary immunisations in children aged 24 months in England since 2009 to 2010,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9
+This worksheet contains one table. Some cells may refer to notes which can be found on the Notes worksheet.,,,,,,,,,
+[z] not applicable.,,,,,,,,,
+[note 1],"In 2009 to 2010, 4 primary care trusts (PCTs) reported data quality issues associated with child health information systems.",,,,,,,,
+[note 2],"In 2010 to 2011, 10 PCTs identified data quality issues, 6 of which were associated with the implementation of child health information systems. In addition, 3 PCTs reported only partial data for their area and a further one reported figures that were estimates.",,,,,,,,
+[note 3],"In 2011 to 2012, 4 PCTs identified data quality issues. ",,,,,,,,
+[note 4],"In 2012 to 2013, 4 PCTs identified data quality issues. In 2009 to 2010, 4 PCTs reported data quality issues associated with child health information systems.",,,,,,,,
+[note 5],"In 2013 to 2014, data quality issues were reported in relation to data for 8 local authorities.",,,,,,,,
+[note 6],"In 2014 to 2015, CHIS system problems were reported in relation to 2 local authorities.",,,,,,,,
+[note 7],"In 2015 to 2016, national figures contain a mixture of estimated local authority data and submitted local authority data",,,,,,,,
+[note 9],"The DTaP/IPV/Hib (5-in-1) vaccine was replaced by the DTaP/IPV/Hib/HepB (6-in-1) vaccine in August 2017. Therefore the following age cohorts will have received either the 5-in-1 or the 6-in-1 vaccination, depending on when in the year they were vaccinated: 12 month age cohort in 2018-19 (born in 2017 to 2018), the 24 month age cohort in 2019 to 2020 (born in 2017 to 2018), and the 5-year month age cohort in 2022 to 2023 (born in 2017 to 2018).",,,,,,,,
+[note 11],"In 2015 to 2016, Barnsley local authority were unable to submit PCV booster figures due to IT issues. Their eligible population figure (2,901) is therefore excluded from the national PCV booster coverage calculation for that year.",,,,,,,,
+[note 12],"In 2020 to 2021, Southampton local authority was unable to submit Hib/MenC figures due to a data quality issue. Their eligible population figure (2,678) is therefore excluded from the national Hib/MenC coverage calculation for that year.",,,,,,,,
+[note 23],"Please note that system changes in 14 UTLAs in London earlier this year, as well as changes to the way multiple dose courses are calculated, mean that the coverage in London for some vaccines, particularly the pre-school (dTaP/IPV) booster and MMR2 is likely to be underestimated. Reported falls in coverage in these vaccines in the current year should not be used for local vaccination performance management or in isolation to direct public health action. Please see the data sources and methodology section for more information. Additionally, until data on children not registered with a GP can be validated, only children registered with a GP are included in the London-, England-, and UK-level figures. The affected UTLAs are Greenwich, Hammersmith and Fulham, Kensington and Chelsea, Lambeth, Lewisham, Southwark, Westminster, Bexley, Brent, Bromley, Ealing, Harrow, Hillingdon, and Hounslow. Coverage in these UTLAs will be higher than coverage measured when including the unregistered population. However, these coverage estimates will more closely reflect the true coverage in the population until the data on children not registered with a GP is fully validated.",,,,,,,,
+Financial year,Notes,Number of children aged 24 months,Coverage of DTaP/IPV/Hib/HepB (%),Coverage of DTaP/IPV/Hib (%),Coverage of MenC (%),Coverage of MMR1 (%),Coverage of Hib/MenC booster (%),Coverage of PCV booster (%),Coverage of MenB booster(%)
+2009 to 2010,[note 1],662217,[z],95.29378548986392,94.2018942018942,88.1838097524372,90.03105669772336,87.56750717535031,[z]
+2010 to 2011,[note 2],669800,[z],95.97626157061809,94.7750074649149,89.1258584652135,91.58719020603165,89.34219169901463,[z]
+2011 to 2012,[note 3],679592,[z],96.14239131714322,94.87619042013444,91.24827837879198,92.34496580301122,91.48901105369104,[z]
+2012 to 2013,[note 4],689447,[z],96.29848269700209,95.14581976569627,92.32239751569011,92.6590441324714,92.47367817975856,[z]
+2013 to 2014,[note 5],697246,[z],96.13803070535131,[z],92.65428664827631,92.51191452511081,92.43879289085665,[z]
+2014 to 2015,[note 6],691790,[z],95.7440841874,[z],92.290001301,92.126801486,92.1948857312,[z]
+2015 to 2016,"[note 7, note 11]",663413,[z],95.24251125039702,[z],91.9150634700529,91.603905503156,91.53492286681445,[z]
+2016 to 2017,[z],664314,[z],95.14597012858377,[z],91.60637891117754,91.46066468567575,91.52208142535007,[z]
+2017 to 2018,[z],672077,[z],95.10249569617767,[z],91.1639588916151,91.18017727135432,91.00370939639357,[z]
+2018 to 2019,[z],669858,[z],94.16682341630614,[z],90.30764729241123,90.43035986731516,90.20926823296878,87.80069805839446
+2019 to 2020,[note 9],650302,[z],93.84808904170677,[z],90.62035792600976,90.54946778573647,90.37308819594588,88.7034024191837
+2020 to 2021,[note 12],630876,93.84728536194118,[z],[z],90.29904450319873,90.16934151334452,90.1261103608316,89.02953987788409
+2021 to 2022,[z],619634,93.04476513554776,[z],[z],89.1823237588641,89.02707081922554,89.34144995271403,87.95304970353467
+2022 to 2023,[z],602599,92.61648293475429,[z],[z],89.34697867072464,88.71538120707136,88.52304766519691,87.58428075718679
+2023 to 2024,[z],623469,92.43571051648118,[z],[z],88.94026808069046,88.64514514755345,88.17150491844824,87.25453871804372
+2024 to 2025,[note 23],"597,527",92.5,[z],[z],88.9,88.6,88.1,87.3
