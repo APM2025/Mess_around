@@ -1,16 +1,19 @@
 """
-Canonical Vaccine Reference Data
+Vaccine Matching and Reference Data
 
-Defines the official list of vaccines tracked in the database with standardized names
-and aliases to handle inconsistent naming across different CSV source files.
+Unified module containing:
+1. Canonical vaccine reference data
+2. VaccineMatcher class for fuzzy matching
+3. Convenience function for header matching
 
-Structure:
-- vaccine_code: Database identifier
-- vaccine_name: Official standardized name
-- description: What the vaccine protects against
-- aliases: Alternative names found in CSV files
+Handles inconsistent vaccine naming across CSV sources.
 """
 
+from typing import Optional, Dict, List
+from difflib import SequenceMatcher
+
+
+# Canonical vaccine reference data
 CANONICAL_VACCINES = [
     {
         'vaccine_code': 'DTaP_IPV_Hib_HepB',
@@ -93,15 +96,144 @@ CANONICAL_VACCINES = [
 ]
 
 
+class VaccineMatcher:
+    """
+    Vaccine name matching with caching and fuzzy matching support.
+    
+    Handles inconsistent vaccine naming across CSV sources by matching
+    against canonical vaccine codes and aliases.
+    """
+    
+    def __init__(self, canonical_vaccines: list):
+        """
+        Initialize matcher with canonical vaccine list.
+        
+        Args:
+            canonical_vaccines: List of vaccine dictionaries with codes, names, and aliases
+        """
+        self.canonical_vaccines = canonical_vaccines
+        self._exact_match_index = {}
+        self._alias_index = {}
+        self._cache = {}
+        self._build_indexes()
+    
+    def _build_indexes(self) -> None:
+        """Build fast lookup indexes for exact and alias matches."""
+        for vaccine in self.canonical_vaccines:
+            # Index by vaccine name
+            self._exact_match_index[vaccine['vaccine_name']] = vaccine['vaccine_code']
+            
+            # Index by all aliases
+            for alias in vaccine['aliases']:
+                self._alias_index[alias] = vaccine['vaccine_code']
+    
+    def match(self, header_text: str) -> Optional[str]:
+        """
+        Match CSV header to vaccine code.
+        
+        Args:
+            header_text: Raw column header from CSV
+        
+        Returns:
+            vaccine_code if matched, None otherwise
+        """
+        # Check cache first
+        if header_text in self._cache:
+            return self._cache[header_text]
+        
+        # Clean the header
+        cleaned = self._clean_header(header_text)
+        
+        # Try exact match
+        if cleaned in self._exact_match_index:
+            result = self._exact_match_index[cleaned]
+            self._cache[header_text] = result
+            return result
+        
+        # Try alias match
+        if cleaned in self._alias_index:
+            result = self._alias_index[cleaned]
+            self._cache[header_text] = result
+            return result
+        
+        # Try fuzzy match
+        result = self._fuzzy_match(cleaned)
+        self._cache[header_text] = result
+        return result
+    
+    def _clean_header(self, header: str) -> str:
+        """Remove common prefixes and suffixes from header text."""
+        cleaned = header.strip()
+        
+        # Remove common prefixes
+        prefixes = [
+            'Coverage at 12 months ',
+            'Coverage at 24 months ',
+            'Coverage at 5 years ',
+            'Coverage of ',
+            'Number aged 12 months ',
+            'Number aged 24 months ',
+            'Number aged 5 years '
+        ]
+        
+        for prefix in prefixes:
+            cleaned = cleaned.replace(prefix, '')
+        
+        # Remove suffixes
+        cleaned = cleaned.replace(' Prim', '')
+        cleaned = cleaned.replace(' (%)', '')
+        cleaned = cleaned.replace('(%)', '')
+        
+        # Handle rotavirus vs rota
+        if 'rotavirus' in cleaned.lower():
+            cleaned = 'Rotavirus'
+        
+        return cleaned.strip()
+    
+    def _fuzzy_match(self, text: str) -> Optional[str]:
+        """
+        Fuzzy matching for partial matches.
+        
+        Args:
+            text: Cleaned header text
+        
+        Returns:
+            Best match vaccine_code if confidence is high enough, otherwise None
+        """
+        best_match = None
+        best_ratio = 0.0
+        threshold = 0.8  # 80% similarity required
+        
+        for vaccine_name, vaccine_code in self._exact_match_index.items():
+            ratio = SequenceMatcher(None, text.lower(), vaccine_name.lower()).ratio()
+            if ratio > best_ratio and ratio >= threshold:
+                best_ratio = ratio
+                best_match = vaccine_code
+        
+        return best_match
+    
+    def get_match_statistics(self) -> dict:
+        """Return matching statistics for debugging."""
+        return {
+            'cache_size': len(self._cache),
+            'cache_hits': sum(1 for v in self._cache.values() if v is not None),
+            'cache_misses': sum(1 for v in self._cache.values() if v is None)
+        }
+    
+    def clear_cache(self) -> None:
+        """Clear the matching cache."""
+        self._cache.clear()
 
-# Create global matcher instance for backward compatibility
-from database_version_2.src.vaccine_matcher import VaccineMatcher
+
+# Create global matcher instance for convenience
 _matcher = VaccineMatcher(CANONICAL_VACCINES)
 
 
-def match_vaccine_from_header(header_text: str) -> str:
+def match_vaccine_from_header(header_text: str) -> Optional[str]:
     """
     Match CSV header to canonical vaccine code.
+    
+    Convenience function that uses the global matcher instance.
     
     Args:
         header_text: Column header from CSV file

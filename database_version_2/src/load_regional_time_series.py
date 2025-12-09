@@ -41,9 +41,9 @@ def load_regional_time_series_from_csv(csv_path: Path, session: Session) -> None
         - Each file is for ONE vaccine
     """
     # Use type-aware CSV cleaner
-    from database_version_2.src.csv_cleaner import load_cleaned_csv
+    from database_version_2.src.csv_cleaner import load_cleaned_csv_typed
     
-    df, region_columns, csv_type = load_cleaned_csv(csv_path)
+    df, region_columns, csv_type = load_cleaned_csv_typed(csv_path)
     
     if df.empty:
         print(f"  No data rows found")
