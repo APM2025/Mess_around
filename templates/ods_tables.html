@@ -288,8 +288,8 @@
             <div class="control-group">
                 <label>Table:</label>
                 <select id="table-select" onchange="loadTable()">
-                    <option value="table1">Table 1: UK by Country (12/24/5 year cohorts)</option>
-                    <option value="table4">Table 4: UTLA Coverage (12/24/5 year cohorts)</option>
+                    <option value="table1">Table 1 - National Coverage</option>
+                    <option value="table4">Table 2 - Local Authority Coverage</option>
                 </select>
             </div>
             <div class="control-group">
@@ -300,14 +300,8 @@
                     <option value="5 years">5 years</option>
                 </select>
             </div>
-            <div class="control-group">
-                <label>Year:</label>
-                <select id="year-select">
-                    <option value="2024">2024-2025</option>
-                    <option value="2023">2023-2024</option>
-                    <option value="2022">2022-2023</option>
-                </select>
-            </div>
+            <!-- Year hidden - only 2024 data available -->
+            <input type="hidden" id="year-select" value="2024">
             <button onclick="loadTable()">Load Table</button>
             <button class="btn-secondary" onclick="exportTable()">Export CSV</button>
             <button class="btn-secondary" onclick="clearFilters()">Clear Filters</button>
@@ -656,7 +650,7 @@
                 // Filter row
                 columns.forEach(col => {
                     html += `\u003cth style="font-weight: normal; padding: 4px;"\u003e
-                        \u003cinput type="text" placeholder="Filter..." onkeyup="filterColumn(this, '${col}')" /\u003e
+                        \u003cinput type="text" placeholder="Filter..." data-column="${col}" onkeyup="filterColumn(this, '${col}')" /\u003e
                     \u003c/th\u003e`;
                 });
                 html += '\u003c/tr\u003e\u003c/thead\u003e';
@@ -722,10 +716,24 @@
 
             if (!currentTableData || !currentTableData.data) return;
 
-            // Apply filter
+            // Get all filter inputs
+            const allFilters = {};
+            document.querySelectorAll('th input').forEach(inp => {
+                const col = inp.getAttribute('data-column');
+                if (col && inp.value) {
+                    allFilters[col] = inp.value.toLowerCase();
+                }
+            });
+
+            // Apply all filters
             filteredData = currentTableData.data.filter(row => {
-                const cellValue = String(row[columnName] || '').toLowerCase();
-                return cellValue.includes(filterValue);
+                for (const [col, filterVal] of Object.entries(allFilters)) {
+                    const cellValue = String(row[col] || '').toLowerCase();
+                    if (!cellValue.includes(filterVal)) {
+                        return false;
+                    }
+                }
+                return true;
             });
 
             // Re-render table
