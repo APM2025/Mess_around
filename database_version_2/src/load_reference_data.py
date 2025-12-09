@@ -28,13 +28,14 @@ def load_geographic_areas(session):
     Args:
         session: SQLAlchemy session
     """
-    # Countries (4)
+    # Countries (5)
     countries = [
+        {'area_code': 'K02000001', 'area_name': 'United Kingdom', 'area_type': 'country', 'parent_region_code': None},
         {'area_code': 'E92000001', 'area_name': 'England', 'area_type': 'country', 'parent_region_code': None},
         {'area_code': 'S92000003', 'area_name': 'Scotland', 'area_type': 'country', 'parent_region_code': None},
         {'area_code': 'W92000004', 'area_name': 'Wales', 'area_type': 'country', 'parent_region_code': None},
         {'area_code': 'N92000002', 'area_name': 'Northern Ireland', 'area_type': 'country', 'parent_region_code': None},
-    ]
+        ]
     
     # Regions (9) - NHS England regions
     regions = [
