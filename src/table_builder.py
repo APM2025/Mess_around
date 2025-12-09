@@ -61,19 +61,8 @@ class TableBuilder:
             else:
                 print(f"  MISSING: {name} (area_code={code})")
 
-        # Get vaccines that have data for this cohort
-        # Query which vaccines have coverage data for this cohort
-        vaccine_ids_with_data = self.session.query(NationalCoverage.vaccine_id).filter_by(
-            cohort_id=cohort.cohort_id,
-            year_id=year_obj.year_id
-        ).distinct().all()
-
-        vaccine_ids = [v_id[0] for v_id in vaccine_ids_with_data]
-
-        # Get vaccine details for these IDs
-        vaccines = self.session.query(Vaccine).filter(
-            Vaccine.vaccine_id.in_(vaccine_ids)
-        ).order_by(Vaccine.vaccine_id).all()
+        # Get ALL vaccines to ensure columns appear even if no data (for CRUD demo)
+        vaccines = self.session.query(Vaccine).order_by(Vaccine.vaccine_id).all()
 
 
         data = []
@@ -100,6 +89,7 @@ class TableBuilder:
 
             # Build row in EXACT column order required
             row = {}
+            row['code'] = area.area_code  # Required for CRUD
             row['geographic_area'] = display_name
             row['note'] = '[note 23]' if display_name == 'England' or display_name == 'United Kingdom' else '[z]'
 
@@ -113,10 +103,14 @@ class TableBuilder:
             # Add coverage columns for each vaccine
             for vaccine in vaccines:
                 col_name = f'coverage_at_{cohort_label}_{vaccine.vaccine_code}'
+                vac_col_name = f'vaccinated_at_{cohort_label}_{vaccine.vaccine_code}'
+                
                 if vaccine.vaccine_id in coverage_map:
                     row[col_name] = coverage_map[vaccine.vaccine_id].coverage_percentage
+                    row[vac_col_name] = coverage_map[vaccine.vaccine_id].vaccinated_count
                 else:
                     row[col_name] = None
+                    row[vac_col_name] = None
 
             data.append(row)
 
@@ -159,19 +153,8 @@ class TableBuilder:
         # Get all UTLAs sorted by name
         areas = self.session.query(GeographicArea).filter_by(area_type=area_type).order_by(GeographicArea.area_name).all()
 
-        # Get vaccines that have data for this cohort
-        # Query which vaccines have coverage data for this cohort
-        vaccine_ids_with_data = self.session.query(LocalAuthorityCoverage.vaccine_id).filter_by(
-            cohort_id=cohort.cohort_id,
-            year_id=year_obj.year_id
-        ).distinct().all()
-
-        vaccine_ids = [v_id[0] for v_id in vaccine_ids_with_data]
-
-        # Get vaccine details for these IDs
-        vaccines = self.session.query(Vaccine).filter(
-            Vaccine.vaccine_id.in_(vaccine_ids)
-        ).order_by(Vaccine.vaccine_id).all()
+        # Get ALL vaccines to ensure columns appear even if no data (for CRUD demo)
+        vaccines = self.session.query(Vaccine).order_by(Vaccine.vaccine_id).all()
 
         results = []
 
@@ -186,13 +169,22 @@ class TableBuilder:
             # Create a map of vaccine_id to coverage record
             coverage_map = {rec.vaccine_id: rec for rec in coverage_records}
 
-            # Build row in exact column order
             row = {}
             row['code'] = area.area_code
             row['local_authority'] = area.area_name
-            row['region_name'] = area.parent_region_code or ''
+            if area.parent_region:
+                row['region_name'] = area.parent_region.area_name
+            else:
+                row['region_name'] = area.parent_region_code or ''
             row['ods_code'] = area.ods_code or ''
-            row['note'] = ''
+            
+            # Add notes for special cases
+            note = ''
+            if 'City of London' in area.area_name:
+                note = '[note 18]'
+            elif 'Isles of Scilly' in area.area_name:
+                note = '[note 19]'
+            row['note'] = note
 
             # Add eligible population (column name uses selected cohort)
             cohort_label = cohort_name.replace(' ', '_')

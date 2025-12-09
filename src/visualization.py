@@ -232,3 +232,176 @@ class VaccinationVisualizer:
         plt.close()
 
         return filepath
+
+    def plot_table_comparison(
+        self,
+        data: List[Dict[str, Any]],
+        selected_vaccines: List[str] = None,
+        title: str = "Vaccine Coverage Comparison",
+        filename: str = "table_comparison.png"
+    ) -> Path:
+        """
+        Create grouped bar chart comparing vaccine coverage across geographic areas.
+
+        Args:
+            data: List of table rows with geographic_area and coverage columns
+            selected_vaccines: List of vaccine column names to include (e.g., ['coverage_at_12_months_dtap_ipv_hib'])
+            title: Chart title
+            filename: Output filename
+
+        Returns:
+            Path to saved chart file
+        """
+        import numpy as np
+        
+        if not data or not selected_vaccines:
+            raise ValueError("Data and selected vaccines must be provided")
+        
+        # Extract geographic areas
+        areas = [row.get('geographic_area', row.get('local_authority', 'Unknown')) for row in data]
+        
+        # Prepare vaccine data
+        vaccine_data = {}
+        vaccine_labels = []
+        
+        for vaccine_col in selected_vaccines:
+            # Extract vaccine name from column for label
+            if 'coverage_at_12_months_' in vaccine_col:
+                vaccine_name = vaccine_col.replace('coverage_at_12_months_', '').replace('_', '/').upper()
+            elif 'coverage_at_24_months_' in vaccine_col:
+                vaccine_name = vaccine_col.replace('coverage_at_24_months_', '').replace('_', '/').upper()
+            elif 'coverage_at_5_years_' in vaccine_col:
+                vaccine_name = vaccine_col.replace('coverage_at_5_years_', '').replace('_', '/').upper()
+            else:
+                vaccine_name = vaccine_col.replace('coverage_', '').replace('_', '/').upper()
+            
+            vaccine_labels.append(vaccine_name)
+            vaccine_data[vaccine_name] = [row.get(vaccine_col, 0) for row in data]
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(12, 6))
+        
+        # Set up bar positions
+        x = np.arange(len(areas))
+        width = 0.8 / len(vaccine_labels)  # Width of bars
+        
+        # Create grouped bars
+        colors = plt.cm.Set3(np.linspace(0, 1, len(vaccine_labels)))
+        
+        for i, (vaccine_name, values) in enumerate(vaccine_data.items()):
+            offset = (i - len(vaccine_labels)/2 + 0.5) * width
+            bars = ax.bar(x + offset, values, width, label=vaccine_name, 
+                         color=colors[i], edgecolor='black', linewidth=0.5)
+            
+            # Add value labels on bars (only if there's space)
+            if len(areas) <= 5:
+                for bar in bars:
+                    height = bar.get_height()
+                    if height > 0:
+                        ax.text(bar.get_x() + bar.get_width()/2, height + 0.5,
+                               f'{height:.1f}%',
+                               ha='center', va='bottom', fontsize=8)
+        
+        # Customize chart
+        ax.set_xlabel('Geographic Area', fontsize=12, fontweight='bold')
+        ax.set_ylabel('Coverage (%)', fontsize=12, fontweight='bold')
+        ax.set_title(title, fontsize=14, fontweight='bold')
+        ax.set_xticks(x)
+        ax.set_xticklabels(areas, rotation=45, ha='right')
+        ax.set_ylim(0, 105)
+        ax.legend(loc='upper right', fontsize=9)
+        
+        # Add grid
+        ax.grid(axis='y', alpha=0.3, linestyle='--')
+        
+        # Tight layout
+        plt.tight_layout()
+        
+        # Save figure
+        filepath = self.output_dir / filename
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        return filepath
+
+    def plot_column_averages(
+        self,
+        data: List[Dict[str, Any]],
+        selected_vaccines: List[str] = None,
+        title: str = "Average Vaccine Coverage",
+        filename: str = "column_averages.png"
+    ) -> Path:
+        """
+        Create bar chart showing average coverage for selected vaccines.
+
+        Args:
+            data: List of table rows
+            selected_vaccines: List of vaccine column names
+            title: Chart title
+            filename: Output filename
+
+        Returns:
+            Path to saved chart file
+        """
+        import numpy as np
+        
+        if not data or not selected_vaccines:
+            raise ValueError("Data and selected vaccines must be provided")
+            
+        # Calculate averages
+        averages = []
+        labels = []
+        
+        for col in selected_vaccines:
+            values = [row.get(col) for row in data if row.get(col) is not None]
+            if values:
+                avg = sum(values) / len(values)
+                averages.append(avg)
+                
+                # Format label
+                if 'coverage_at_12_months_' in col:
+                    label = col.replace('coverage_at_12_months_', '').replace('_', '/').upper()
+                elif 'coverage_at_24_months_' in col:
+                    label = col.replace('coverage_at_24_months_', '').replace('_', '/').upper()
+                elif 'coverage_at_5_years_' in col:
+                    label = col.replace('coverage_at_5_years_', '').replace('_', '/').upper()
+                else:
+                    label = col.replace('coverage_', '').replace('_', '/').upper()
+                labels.append(label)
+        
+        if not averages:
+            raise ValueError("No valid data found for selected vaccines")
+
+        # Create figure
+        fig, ax = plt.subplots(figsize=(12, 6))
+        
+        # Create bars
+        x = np.arange(len(labels))
+        bars = ax.bar(x, averages, color='skyblue', edgecolor='navy', alpha=0.7)
+        
+        # Customize chart
+        ax.set_ylabel('Average Coverage (%)', fontsize=12, fontweight='bold')
+        ax.set_title(title, fontsize=14, fontweight='bold')
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels, rotation=45, ha='right')
+        ax.set_ylim(0, 105)
+        
+        # Add value labels
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2, height + 1,
+                   f'{height:.1f}%',
+                   ha='center', va='bottom', fontsize=10, fontweight='bold')
+        
+        # Add grid
+        ax.grid(axis='y', alpha=0.3, linestyle='--')
+        
+        # Tight layout
+        plt.tight_layout()
+        
+        # Save figure
+        filepath = self.output_dir / filename
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        return filepath

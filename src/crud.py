@@ -278,6 +278,23 @@ class VaccinationCRUD:
         self.session.commit()
         return coverage
 
+    def get_coverage_by_keys(
+        self,
+        area_code: str,
+        vaccine_id: int,
+        cohort_id: int,
+        year_id: int
+    ) -> Optional[LocalAuthorityCoverage]:
+        """
+        Retrieve a coverage record by its unique keys.
+        """
+        return self.session.query(LocalAuthorityCoverage).filter_by(
+            area_code=area_code,
+            vaccine_id=vaccine_id,
+            cohort_id=cohort_id,
+            year_id=year_id
+        ).first()
+
     # DELETE operations
     def delete_geographic_area(self, area_code: str) -> bool:
         """

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -268,6 +269,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1 class="table-title" style="font-size: 16pt; margin-bottom: 20px;">
@@ -275,6 +277,14 @@
         </h1>
 
         <div class="controls">
+            <div class="info-box"
+                style="background-color: #e8f4fc; border: 1px solid #b6d4fe; padding: 10px; margin-bottom: 15px; border-radius: 4px; color: #084298;">
+                <strong>💡 Quick Tip:</strong>
+                You can <u>click on any data cell</u> in the table (coverage % or vaccinated count) to automatically
+                populate the edit form below!
+                This allows you to easily update specific records.
+            </div>
+
             <div class="control-group">
                 <label>Table:</label>
                 <select id="table-select" onchange="loadTable()">
@@ -307,59 +317,85 @@
             <div class="loading">Select a table and click "Load Table" to begin</div>
         </div>
 
+        <!-- Notes Section -->
+        <div id="notes-section"
+            style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid #4682b4; display: none;">
+            <h3 style="margin-top: 0; font-size: 11pt;">Notes:</h3>
+            <div id="notes-content"></div>
+        </div>
+
         <!-- Visualization Section -->
-        <div class="viz-section" id="viz-section" style="display: none;">
+        <div class="viz-section" id="viz-section" style="display: block;">
             <h2 class="table-title section-toggle" onclick="toggleSection('viz-content')">
-                📊 Data Visualizations (Click to Toggle)
+                📊 Table Data Visualization (Click to Toggle)
             </h2>
             <div id="viz-content">
-                <div class="viz-controls">
-                    <div class="control-group">
-                        <label>Vaccine:</label>
-                        <select id="viz-vaccine">
-                            <option value="">Select vaccine...</option>
-                        </select>
+                <div class="viz-controls" id="viz-controls" style="display: none;">
+                    <label for="area-search">Select Area to Visualize:</label>
+                    <input list="area-list" id="area-search" placeholder="Type to search area..."
+                        onchange="autoGenerateTableVisualization()" style="padding: 5px; width: 300px;">
+                    <datalist id="area-list"></datalist>
+                    <button class="btn-secondary"
+                        onclick="document.getElementById('area-search').value=''; autoGenerateTableVisualization()">Clear</button>
+                    <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                        Select a specific area to see its detailed vaccine coverage.
                     </div>
-                    <div class="control-group">
-                        <label>Chart Type:</label>
-                        <select id="viz-chart-type">
-                            <option value="top-areas">Top Areas</option>
-                            <option value="trend">Coverage Trend</option>
-                            <option value="distribution">Distribution</option>
-                            <option value="summary">Summary Statistics</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label>Cohort:</label>
-                        <select id="viz-cohort">
-                            <option value="12 months">12 months</option>
-                            <option value="24 months">24 months</option>
-                            <option value="5 years">5 years</option>
-                        </select>
-                    </div>
-                    <button onclick="generateChart()">Generate Chart</button>
                 </div>
                 <div class="chart-container" id="chart-container">
-                    <div class="loading">Select a vaccine and chart type, then click "Generate Chart"</div>
+                    <div class="loading">Loading visualization...</div>
                 </div>
             </div>
         </div>
 
-        <!-- CRUD Section -->
+        <!-- CRUD Section (Row Editor) -->
         <div class="crud-section" id="crud-section">
             <h2 class="table-title section-toggle" onclick="toggleSection('crud-content')">
-                ✏️ Manage Vaccines (Click to Toggle)
+                ✏️ Manage Data (Row Editor)
             </h2>
             <div id="crud-content" style="display: none;">
                 <div class="crud-form">
-                    <h3 style="margin-bottom: 10px; font-size: 11pt;">Add/Update Vaccine</h3>
-                    <input type="text" id="vaccine-code" placeholder="Vaccine Code (e.g., MMR1)" />
-                    <input type="text" id="vaccine-name" placeholder="Vaccine Name (e.g., MMR dose 1)" />
-                    <button onclick="saveVaccine()">Save Vaccine</button>
-                    <button class="btn-secondary" onclick="clearVaccineForm()">Clear</button>
-                </div>
-                <div class="vaccine-list" id="vaccine-list">
-                    <div class="loading">Loading vaccines...</div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 id="crud-mode-title" style="margin: 0; font-size: 11pt;">Select a row to edit</h3>
+                        <button class="secondary-btn" style="padding: 4px 10px; font-size: 0.9em;"
+                            onclick="setupAddNew()">+ Add New Row</button>
+                    </div>
+
+                    <div id="crud-editor-container" style="display: none;">
+                        <!-- Area Selection -->
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                            <label style="font-weight: bold; margin-right: 10px;">Area:</label>
+                            <span id="crud-static-area" style="font-weight: bold; font-size: 1.1em;"></span>
+                            <div id="crud-new-area-container" style="display: none; margin-top: 5px;">
+                                <input list="crud-area-list" id="crud-area-input" placeholder="Search Area by Name..."
+                                    style="width: 100%; padding: 5px;">
+                                <datalist id="crud-area-list"></datalist>
+                            </div>
+                        </div>
+
+                        <!-- Shared Cohort Population (if applicable) -->
+                        <div id="crud-shared-pop-container" style="margin-bottom: 15px; display: none;">
+                            <label>Eligible Population (Shared):</label>
+                            <input type="number" id="crud-shared-pop" onchange="updateAllCoverages()"
+                                style="width: 100px;">
+                        </div>
+
+                        <!-- Dynamic Vaccine Inputs -->
+                        <div id="crud-vaccine-grid"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; max-height: 500px; overflow-y: auto;">
+                            <!-- Injected via JS -->
+                        </div>
+
+                        <!-- Actions -->
+                        <div
+                            style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; display: flex; gap: 10px;">
+                            <button class="primary-btn" onclick="saveRowData()">💾 Save Row</button>
+                            <button id="crud-delete-btn" class="danger-btn"
+                                style="background-color: #dc3545; border-color: #dc3545;" onclick="deleteRowData()">🗑️
+                                Delete Row</button>
+                            <button class="secondary-btn" onclick="cancelEdit()">Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -368,12 +404,17 @@
     <script>
         let currentTableData = null;
         let filteredData = null;
+        let isAddMode = false;
+        let currentAreaCode = null;
 
         async function loadTable() {
             const tableType = document.getElementById('table-select').value;
             const cohort = document.getElementById('cohort-select').value;
             const year = parseInt(document.getElementById('year-select').value);
             const container = document.getElementById('table-container');
+
+            // Clear viz search on new table load
+            document.getElementById('area-search').value = '';
 
             container.innerHTML = '<div class="loading">Loading table data...</div>';
 
@@ -384,21 +425,21 @@
 
                 if (tableType === 'table1') {
                     endpoint = '/api/tables/table1';
-                    requestBody = {cohort_name: cohort, year: year};
+                    requestBody = { cohort_name: cohort, year: year };
                 } else if (tableType === 'table4') {
                     endpoint = '/api/tables/utla';
-                    requestBody = {cohort_name: cohort, year: year};
+                    requestBody = { cohort_name: cohort, year: year };
                 } else if (tableType === 'table7') {
                     endpoint = '/api/tables/hepb';
-                    requestBody = {year: year};
+                    requestBody = { year: year };
                 } else if (tableType === 'table8') {
                     endpoint = '/api/tables/bcg';
-                    requestBody = {year: year};
+                    requestBody = { year: year };
                 }
 
                 response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
                 });
 
@@ -407,6 +448,19 @@
                 filteredData = result.data;
 
                 renderTable(result);
+
+                // Populate area search list if table 4
+                if (tableType === 'table4' && result.data) {
+                    const dataList = document.getElementById('area-list');
+                    dataList.innerHTML = '';
+                    // Get unique area names
+                    const areas = [...new Set(result.data.map(d => d.local_authority))].sort();
+                    areas.forEach(area => {
+                        const option = document.createElement('option');
+                        option.value = area;
+                        dataList.appendChild(option);
+                    });
+                }
 
             } catch (error) {
                 container.innerHTML = `<div class="loading" style="color: red;">Error: ${error.message}</div>`;
@@ -500,34 +554,47 @@
 
             // Table
             if (filteredData && filteredData.length > 0) {
-                html += '<table id="data-table">';
-
                 // Get all columns from first row
                 const firstRow = filteredData[0];
+                const allColumns = Object.keys(firstRow);
+
+                // Filter out completely empty columns
+                const nonEmptyColumns = allColumns.filter(col => {
+                    // Check if any row has a non-empty value for this column
+                    return filteredData.some(row => {
+                        const val = row[col];
+                        return val !== null && val !== undefined && val !== '';
+                    });
+                });
+
                 let columns;
 
                 // Define column order dynamically
                 const currentTable = document.getElementById('table-select').value;
-                const allColumns = Object.keys(firstRow);
 
                 if (currentTable === 'table1') {
                     // Table 1: geographic_area, note, number_aged_X, then coverage columns
                     const fixedCols = ['geographic_area', 'note'];
-                    const numberCol = allColumns.filter(col => col.startsWith('number_aged_'));
-                    const coverageCols = allColumns.filter(col => col.startsWith('coverage_at_'));
-                    columns = [...fixedCols, ...numberCol, ...coverageCols];
+                    const numberCol = nonEmptyColumns.filter(col => col.startsWith('number_aged_'));
+                    const coverageCols = nonEmptyColumns.filter(col => col.startsWith('coverage_at_'));
+                    columns = [...fixedCols, ...numberCol, ...coverageCols].filter(c => nonEmptyColumns.includes(c));
                 } else if (currentTable === 'table4') {
                     // Table 4: code, local_authority, region_name, ods_code, note, number_aged_X, then vaccine columns
-                    const fixedCols = ['code', 'local_authority', 'region_name', 'ods_code', 'note'];
-                    const numberCol = allColumns.filter(col => col.startsWith('number_aged_'));
-                    const vaccineCols = allColumns.filter(col =>
+                    const fixedCols = ['code', 'local_authority', 'region_name', 'note'];
+                    const numberCol = nonEmptyColumns.filter(col => col.startsWith('number_aged_'));
+                    const vaccineCols = nonEmptyColumns.filter(col =>
                         col.startsWith('vaccinated_at_') || col.startsWith('coverage_at_')
                     ).sort(); // Sort to get vaccinated/coverage pairs together
-                    columns = [...fixedCols, ...numberCol, ...vaccineCols];
+                    columns = [...fixedCols, ...numberCol, ...vaccineCols].filter(c => nonEmptyColumns.includes(c));
                 } else {
                     // For other tables, use natural order from data
-                    columns = allColumns;
+                    columns = nonEmptyColumns;
                 }
+
+                // Store visible columns for Row Editor
+                window.currentColumns = columns;
+
+                html += '<table id="data-table">';
 
                 html += '<thead><tr>';
                 columns.forEach(col => {
@@ -578,18 +645,26 @@
                         // Fallback: capitalize first letter of each word
                         displayName = col.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                     }
-
-                    html += `<th>
-                        ${displayName}
-                        <input type="text" placeholder="Filter..." onkeyup="filterColumn(this, '${col}')" />
-                    </th>`;
+                    displayName = displayName
+                        .replace('Coverage At', 'Coverage at')
+                        .replace('Vaccinated At', 'Vaccinated at')
+                        .replace('Number Aged', 'Number aged');
+                    html += `\u003cth\u003e${displayName}\u003c/th\u003e`;
                 });
-                html += '</tr></thead>';
+                html += '\u003c/tr\u003e\u003ctr\u003e';
+
+                // Filter row
+                columns.forEach(col => {
+                    html += `\u003cth style="font-weight: normal; padding: 4px;"\u003e
+                        \u003cinput type="text" placeholder="Filter..." onkeyup="filterColumn(this, '${col}')" /\u003e
+                    \u003c/th\u003e`;
+                });
+                html += '\u003c/tr\u003e\u003c/thead\u003e';
 
                 // Data rows
-                html += '<tbody>';
-                filteredData.forEach(row => {
-                    html += '<tr>';
+                html += '\u003ctbody\u003e';
+                filteredData.forEach((row, index) => {
+                    html += `<tr onclick="editRow(${index})" style="cursor: pointer;" title="Click to Edit Row" data-index="${index}">`;
                     columns.forEach(col => {
                         const value = row[col];
                         let displayValue = value;
@@ -621,6 +696,25 @@
             }
 
             container.innerHTML = html;
+
+            // Display notes if available
+            const notesSection = document.getElementById('notes-section');
+            const notesContent = document.getElementById('notes-content');
+
+            if (currentTableData.notes && currentTableData.notes.length > 0) {
+                let notesHtml = '\u003cul style="margin: 5px 0; padding-left: 25px;"\u003e';
+                currentTableData.notes.forEach(note => {
+                    notesHtml += `\u003cli style="margin: 5px 0;"\u003e${note}\u003c/li\u003e`;
+                });
+                notesHtml += '\u003c/ul\u003e';
+                notesContent.innerHTML = notesHtml;
+                notesSection.style.display = 'block';
+            } else {
+                notesSection.style.display = 'none';
+            }
+
+            // Auto-generate visualization after rendering table
+            autoGenerateTableVisualization();
         }
 
         function filterColumn(input, columnName) {
@@ -683,206 +777,447 @@
         }
 
         // Auto-load table on page load
-        window.onload = function() {
+        window.onload = function () {
             loadTable();
-            loadVaccines();
-            loadVaccinesForViz();
+            loadReferenceData();
         };
 
         // ===== VISUALIZATION FUNCTIONS =====
-        async function loadVaccinesForViz() {
-            try {
-                const response = await fetch('/api/vaccines');
-                const vaccines = await response.json();
+        async function autoGenerateTableVisualization() {
+            console.log("[VIZ] autoGenerateTableVisualization called");
 
-                const select = document.getElementById('viz-vaccine');
-                vaccines.forEach(v => {
-                    const option = document.createElement('option');
-                    option.value = v.vaccine_code;
-                    option.textContent = `${v.vaccine_code} - ${v.vaccine_name}`;
-                    select.appendChild(option);
-                });
-
-                // Show visualization section once vaccines are loaded
-                document.getElementById('viz-section').style.display = 'block';
-            } catch (error) {
-                console.error('Error loading vaccines:', error);
+            if (!currentTableData || !filteredData || filteredData.length === 0) {
+                console.log("[VIZ] No table data, hiding viz section");
+                document.getElementById('viz-section').style.display = 'none';
+                return;
             }
-        }
 
-        async function generateChart() {
-            const vaccine = document.getElementById('viz-vaccine').value;
-            const chartType = document.getElementById('viz-chart-type').value;
-            const cohort = document.getElementById('viz-cohort').value;
+            const tableType = document.getElementById('table-select').value;
+            console.log(`[VIZ] Table type: ${tableType}`);
+
+            // Show visualization for table1 and table4
+            if (tableType !== 'table1' && tableType !== 'table4') {
+                console.log("[VIZ] Table type not supported for viz, hiding");
+                document.getElementById('viz-section').style.display = 'none';
+                return;
+            }
+
+            // Show visualization section
+            document.getElementById('viz-section').style.display = 'block';
+            console.log("[VIZ] Showing viz section");
+
+            // Show/Hide area selector controls
+            const vizControls = document.getElementById('viz-controls');
+            if (tableType === 'table4') {
+                vizControls.style.display = 'block';
+            } else {
+                vizControls.style.display = 'none';
+            }
+
+            const cohort = document.getElementById('cohort-select').value;
+            const year = parseInt(document.getElementById('year-select').value);
             const container = document.getElementById('chart-container');
 
-            if (!vaccine) {
-                alert('Please select a vaccine');
+            // Handle Table 4 Area Selection
+            let selectedAreas = [];
+            if (tableType === 'table4') {
+                const searchVal = document.getElementById('area-search').value;
+                if (!searchVal) {
+                    container.innerHTML = '<div class="loading" style="padding: 20px;">Please select an area from the search box above to visualize vaccine coverage.</div>';
+                    return; // Stop here if no area selected for Table 4
+                }
+                selectedAreas = [searchVal];
+            } else {
+                // For Table 1, use all rows present
+                selectedAreas = filteredData.map(row =>
+                    row.geographic_area || row.local_authority || 'Unknown'
+                );
+                console.log(`[VIZ] Table 1 - Selected areas: ${selectedAreas.join(', ')}`);
+            }
+
+            // Get all coverage columns from the table
+            const firstRow = filteredData[0];
+            const selectedVaccines = Object.keys(firstRow).filter(col => col.startsWith('coverage_at_'));
+
+            console.log(`[VIZ] Found ${selectedVaccines.length} coverage columns:`, selectedVaccines);
+
+            if (selectedVaccines.length === 0) {
+                console.error("[VIZ] No vaccine coverage columns found!");
+                container.innerHTML = '<div class="loading">No vaccine coverage data available in this table</div>';
                 return;
             }
 
-            container.innerHTML = '<div class="loading">Generating chart...</div>';
+            container.innerHTML = '<div class="loading">Generating visualization...</div>';
 
             try {
-                let endpoint;
-                let body = {
-                    vaccine_code: vaccine,
+                const requestData = {
+                    table_type: tableType,
                     cohort_name: cohort,
-                    n: 10
+                    year: year,
+                    selected_areas: selectedAreas,
+                    selected_vaccines: selectedVaccines
                 };
 
-                // Map chart types to API endpoints
-                const endpointMap = {
-                    'top-areas': '/api/visualize/top-areas',
-                    'trend': '/api/visualize/trend',
-                    'distribution': '/api/visualize/distribution',
-                    'summary': '/api/visualize/summary'
-                };
+                console.log("[VIZ] Sending request:", requestData);
 
-                endpoint = endpointMap[chartType];
-
-                const response = await fetch(endpoint, {
+                const response = await fetch('/api/visualize/table-comparison', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
                 });
 
+                console.log(`[VIZ] Response status: ${response.status}`);
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error(`[VIZ] Server error:`, text);
+                    throw new Error(`Server Error (${response.status}): ${text.substring(0, 100)}...`);
+                }
+
                 const result = await response.json();
+                console.log("[VIZ] Response data:", result);
 
                 if (result.error) {
+                    console.error(`[VIZ] Error from server: ${result.error}`);
                     container.innerHTML = `<div class="loading" style="color: red;">Error: ${result.error}</div>`;
                 } else {
-                    // Add timestamp to prevent caching
                     const timestamp = new Date().getTime();
-                    container.innerHTML = `<img src="${result.chart_url}?t=${timestamp}" alt="${chartType} chart" />`;
+                    const chartUrl = `${result.chart_url}?t=${timestamp}`;
+                    console.log(`[VIZ] Loading chart from: ${chartUrl}`);
+                    container.innerHTML = `<img src="${chartUrl}" alt="Table comparison chart" />`;
                 }
+
             } catch (error) {
-                container.innerHTML = `<div class="loading" style="color: red;">Error: ${error.message}</div>`;
+                console.error("[VIZ] Exception:", error);
+                container.innerHTML = `<div class="loading" style="color: red;">
+                    Error generating chart.<br>
+                    <small>${error.message}</small>
+                </div>`;
             }
         }
 
-        // ===== CRUD FUNCTIONS =====
-        async function loadVaccines() {
+        // Global maps for Area matching
+        window.areaMap = {}; // Name -> Code
+        window.areaCodeMap = {}; // Code -> Name
+
+        async function loadReferenceData() {
             try {
-                const response = await fetch('/api/crud/vaccines');
-                const vaccines = await response.json();
+                // Load Areas
+                const aResponse = await fetch('/api/areas');
+                const areas = await aResponse.json();
+                const areaList = document.getElementById('crud-area-list');
 
-                const listDiv = document.getElementById('vaccine-list');
+                window.areaMap = {};
+                window.areaCodeMap = {};
 
-                if (vaccines.length === 0) {
-                    listDiv.innerHTML = '<div class="loading">No vaccines found</div>';
-                    return;
+                if (areaList) areaList.innerHTML = '';
+
+                areas.forEach(a => {
+                    // Populate maps
+                    window.areaMap[a.name] = a.code;
+                    window.areaCodeMap[a.code] = a.name;
+
+                    if (areaList) {
+                        const option = document.createElement('option');
+                        option.value = a.name;
+                        areaList.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading ref data:", error);
+            }
+        }
+
+        // ===== ROW EDITOR FUNCTIONS =====
+
+        function editRow(index) {
+            const row = filteredData[index];
+            if (!row) return;
+
+            isAddMode = false;
+            currentAreaCode = row['code'];
+            const areaName = row['local_authority'] || row['geographic_area'] || 'Unknown Area';
+
+            // UI Setup
+            document.getElementById('crud-mode-title').textContent = "Editing " + areaName;
+            document.getElementById('crud-static-area').textContent = areaName;
+            document.getElementById('crud-static-area').style.display = 'inline-block';
+            document.getElementById('crud-new-area-container').style.display = 'none';
+            document.getElementById('crud-delete-btn').style.display = 'inline-block';
+            document.getElementById('crud-editor-container').style.display = 'block';
+
+            // Generate Inputs
+            generateRowInputs(row);
+
+            // Expand and Scroll
+            const content = document.getElementById('crud-content');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+            }
+            document.getElementById('crud-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setupAddNew() {
+            isAddMode = true;
+            currentAreaCode = null;
+
+            // UI Setup
+            document.getElementById('crud-mode-title').textContent = "Add New Record Row";
+            document.getElementById('crud-static-area').style.display = 'none';
+            document.getElementById('crud-new-area-container').style.display = 'block';
+            document.getElementById('crud-area-input').value = '';
+            document.getElementById('crud-delete-btn').style.display = 'none';
+            document.getElementById('crud-editor-container').style.display = 'block';
+
+            // Generate Empty Inputs based on columns of the first row (if exists) or current columns
+            // We use filteredData[0] as template, or just currentTableData keys
+            let templateRow = {};
+            if (filteredData && filteredData.length > 0) {
+                templateRow = { ...filteredData[0] };
+                // Clear values
+                Object.keys(templateRow).forEach(key => templateRow[key] = null);
+            }
+
+            generateRowInputs(templateRow);
+
+            // Expand
+            const content = document.getElementById('crud-content');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+            }
+        }
+
+        function generateRowInputs(row) {
+            const container = document.getElementById('crud-vaccine-grid');
+            container.innerHTML = '';
+
+            // 1. Identify Shared Population (Table 4)
+            // Look for 'number_aged_X'
+            const popKeys = Object.keys(row).filter(k => k.startsWith('number_aged_'));
+            if (popKeys.length > 0) {
+                const popVal = row[popKeys[0]];
+                document.getElementById('crud-shared-pop').value = popVal;
+                document.getElementById('crud-shared-pop-container').style.display = 'block';
+                document.getElementById('crud-shared-pop').setAttribute('data-key', popKeys[0]);
+            } else {
+                document.getElementById('crud-shared-pop-container').style.display = 'none';
+            }
+
+            // 2. Identify Vaccines
+            // We group by "vaccine suffix" found in coverage_at_X_Vaccine
+            const vaccinesFound = new Set();
+            const cols = Object.keys(row);
+
+            cols.forEach(col => {
+                if (col.startsWith('coverage_at_') || col.startsWith('vaccinated_at_')) {
+                    // Extract vaccine code
+                    // Pattern: ..._months_CODE or ..._years_CODE
+                    let code = null;
+                    if (col.includes('_months_')) code = col.split('_months_')[1];
+                    else if (col.includes('_years_')) code = col.split('_years_')[1];
+
+                    if (code) vaccinesFound.add(code);
+                }
+            });
+
+            // 3. Create Inputs for each Vaccine
+            // Filter vaccines to ONLY those present in the current visible columns
+            let sortedVaccines = [];
+
+            const visibleVaccines = Array.from(vaccinesFound).filter(vCode => {
+                const cohort = document.getElementById('cohort-select').value.replace(' ', '_');
+                const expectedCol = `coverage_at_${cohort}_${vCode}`;
+
+                // Allow if simple match
+                if (window.currentColumns && window.currentColumns.includes(expectedCol)) return true;
+
+                // Also allow if there is a vaccinated column
+                const expectedVacCol = `vaccinated_at_${cohort}_${vCode}`;
+                if (window.currentColumns && window.currentColumns.includes(expectedVacCol)) return true;
+
+                return false;
+            });
+
+            sortedVaccines = visibleVaccines.sort();
+
+            if (sortedVaccines.length === 0 && vaccinesFound.size > 0) {
+                // Fallback: if filtering hid everything (e.g. logic mismatch), show all
+                // This prevents "empty editor" bug if column names differ slightly
+                console.warn("Row Editor: Filtering hid all vaccines. Showing all found in data.");
+                sortedVaccines = Array.from(vaccinesFound).sort();
+            }
+
+            sortedVaccines.forEach(vCode => {
+                // Find matching keys
+                // We assume current cohort is active one in table columns
+                const cohort = document.getElementById('cohort-select').value.replace(' ', '_');
+
+                const covKey = cols.find(c => c === `coverage_at_${cohort}_${vCode}`);
+                const vacKey = cols.find(c => c === `vaccinated_at_${cohort}_${vCode}`);
+
+                let covVal = covKey ? row[covKey] : '';
+                let vacVal = vacKey ? row[vacKey] : '';
+
+                // Display Name
+                const displayName = vCode.replace(/_/g, '/'); // DTaP_IPV -> DTaP/IPV
+
+                const card = document.createElement('div');
+                card.className = "vaccine-card";
+                card.style.border = "1px solid #ddd";
+                card.style.padding = "10px";
+                card.style.borderRadius = "4px";
+                card.style.backgroundColor = "#fff";
+
+                card.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 8px; color: #084298;">${displayName}</div>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.8em; display: block;">Vaccinated</label>
+                            <input type="number" class="row-vac-input" data-vaccine="${vCode}" value="${vacVal !== null ? vacVal : ''}" style="width: 100%; border: 1px solid #ccc; padding: 4px;" onchange="updateRowCoverage(this)">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.8em; display: block;">Coverage %</label>
+                            <input type="number" class="row-cov-input" data-vaccine="${vCode}" value="${covVal !== null ? covVal : ''}" step="0.1" style="width: 100%; border: 1px solid #ccc; padding: 4px; background: #f9f9f9;" readonly>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateAllCoverages() {
+            // Updated shared population
+            const inputs = document.querySelectorAll('.row-vac-input');
+            inputs.forEach(input => updateRowCoverage(input));
+        }
+
+        function updateRowCoverage(vacInput) {
+            // Find sibling coverage input
+            const parent = vacInput.closest('.vaccine-card');
+            const covInput = parent.querySelector('.row-cov-input');
+
+            // Get Eligible Pop
+            const popInput = document.getElementById('crud-shared-pop');
+            const eligible = parseFloat(popInput.value);
+            const vaccinated = parseFloat(vacInput.value);
+
+            if (eligible > 0 && !isNaN(vaccinated)) {
+                const cov = (vaccinated / eligible) * 100;
+                covInput.value = cov.toFixed(1);
+            } else {
+                // If pop is missing or vaccinated is empty
+                if (vaccinated === 0) covInput.value = '0.0';
+            }
+        }
+
+        function cancelEdit() {
+            document.getElementById('crud-editor-container').style.display = 'none';
+            document.getElementById('crud-mode-title').textContent = "Select a row to edit";
+            isAddMode = false;
+        }
+
+        async function saveRowData() {
+            try {
+                console.log("saveRowData called");
+                // 1. Get Area Code
+                let areaCode = currentAreaCode;
+                if (isAddMode) {
+                    const nameInput = document.getElementById('crud-area-input').value;
+                    areaCode = window.areaMap[nameInput];
+                    if (!areaCode) {
+                        alert('Please select a valid Area');
+                        return;
+                    }
                 }
 
-                let html = '<h3 style="margin-bottom: 10px; font-size: 11pt;">Existing Vaccines</h3>';
-                vaccines.forEach(v => {
-                    html += `
-                        <div class="vaccine-item">
-                            <div>
-                                <strong>${v.vaccine_code}</strong> - ${v.vaccine_name}
-                            </div>
-                            <div class="vaccine-actions">
-                                <button class="btn-secondary" onclick="editVaccine('${v.vaccine_code}', '${v.vaccine_name}')">Edit</button>
-                                <button onclick="deleteVaccine('${v.vaccine_code}')" style="background: #dc3545; border-color: #dc3545;">Delete</button>
-                            </div>
-                        </div>
-                    `;
+                // 2. Get Shared Data
+                const cohort = document.getElementById('cohort-select').value; // from main select
+                const year = parseInt(document.getElementById('year-select').value);
+                const popInput = document.getElementById('crud-shared-pop');
+                const eligible = popInput ? popInput.value : null;
+
+                // 3. Collect Vaccine Updates
+                const updates = [];
+                const cards = document.querySelectorAll('.vaccine-card');
+
+                cards.forEach(card => {
+                    const vacInput = card.querySelector('.row-vac-input');
+                    const covInput = card.querySelector('.row-cov-input');
+                    const vCode = vacInput.getAttribute('data-vaccine'); // Do NOT replace underscores, DB uses them!
+
+                    updates.push({
+                        vaccine_code: vCode,
+                        eligible_population: eligible,
+                        vaccinated_count: vacInput.value,
+                        coverage_percentage: covInput.value
+                    });
                 });
 
-                listDiv.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading vaccines:', error);
-                document.getElementById('vaccine-list').innerHTML =
-                    '<div class="loading" style="color: red;">Error loading vaccines</div>';
+                const payload = {
+                    area_code: areaCode,
+                    year: year,
+                    cohort_name: cohort,
+                    vaccine_data: updates
+                };
+
+                try {
+                    const response = await fetch('/api/crud/row', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const res = await response.json();
+                    if (response.ok) {
+                        alert('Row Saved: ' + res.message);
+                        cancelEdit();
+                        loadTable();
+                    } else {
+                        alert('Error: ' + res.error);
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Error saving: ' + e.message);
+                }
+            } catch (outerE) {
+                console.error("Critical error in saveRowData wrapper:", outerE);
+                alert('Critical script error: ' + outerE.message);
             }
         }
 
-        async function saveVaccine() {
-            const code = document.getElementById('vaccine-code').value.trim();
-            const name = document.getElementById('vaccine-name').value.trim();
+        async function deleteRowData() {
+            if (!currentAreaCode) return;
+            if (!confirm('Are you sure you want to delete ALL data for this area?')) return;
 
-            if (!code || !name) {
-                alert('Please enter both vaccine code and name');
-                return;
-            }
+            const cohort = document.getElementById('cohort-select').value;
+            const year = parseInt(document.getElementById('year-select').value);
 
             try {
-                // Check if vaccine exists (for update vs create)
-                const checkResponse = await fetch('/api/crud/vaccines');
-                const existingVaccines = await checkResponse.json();
-                const exists = existingVaccines.some(v => v.vaccine_code === code);
-
-                const method = exists ? 'PUT' : 'POST';
-                const response = await fetch('/api/crud/vaccines', {
-                    method: method,
-                    headers: {'Content-Type': 'application/json'},
+                const response = await fetch('/api/crud/row', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        vaccine_code: code,
-                        vaccine_name: name
+                        area_code: currentAreaCode,
+                        year: year,
+                        cohort_name: cohort
                     })
                 });
-
-                const result = await response.json();
-
+                const res = await response.json();
                 if (response.ok) {
-                    alert(exists ? 'Vaccine updated successfully!' : 'Vaccine created successfully!');
-                    clearVaccineForm();
-                    loadVaccines();
-                    loadVaccinesForViz();
-                } else {
-                    alert('Error: ' + (result.error || 'Unknown error'));
+                    alert('Row Deleted');
+                    cancelEdit();
+                    loadTable();
                 }
-            } catch (error) {
-                alert('Error saving vaccine: ' + error.message);
+            } catch (e) {
+                alert('Error deleting: ' + e.message);
             }
         }
 
-        function editVaccine(code, name) {
-            document.getElementById('vaccine-code').value = code;
-            document.getElementById('vaccine-name').value = name;
-            document.getElementById('vaccine-code').readOnly = true;
 
-            // Scroll to form
-            document.getElementById('crud-content').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        async function deleteVaccine(code) {
-            if (!confirm(`Are you sure you want to delete vaccine ${code}?`)) {
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/crud/vaccines', {
-                    method: 'DELETE',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ vaccine_code: code })
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert('Vaccine deleted successfully!');
-                    loadVaccines();
-                    loadVaccinesForViz();
-                } else {
-                    alert('Error: ' + (result.error || 'Unknown error'));
-                }
-            } catch (error) {
-                alert('Error deleting vaccine: ' + error.message);
-            }
-        }
-
-        function clearVaccineForm() {
-            document.getElementById('vaccine-code').value = '';
-            document.getElementById('vaccine-name').value = '';
-            document.getElementById('vaccine-code').readOnly = false;
-        }
-
-        // ===== UTILITY FUNCTIONS =====
         function toggleSection(sectionId) {
             const section = document.getElementById(sectionId);
             section.style.display = section.style.display === 'none' ? 'block' : 'none';
         }
     </script>
 </body>
+
 </html>
