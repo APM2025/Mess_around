@@ -454,3 +454,589 @@ def test_delete_row_by_codes_invalid_references(crud_manager):
             cohort_name='12 months',
             year=2024
         )
+
+
+# ============================================================================
+# ITERATIVE TEST DEVELOPMENT - Additional comprehensive tests added
+# Focus: Security (SQL injection), Error handling, Complex operations
+# ============================================================================
+
+# ============================================================================
+# SECURITY TESTS - SQL Injection Protection
+# ============================================================================
+
+def test_sql_injection_in_area_code(crud_manager, db_session):
+    """Test that SQL injection attempts in area codes are handled safely."""
+    # Create a legit area first
+    area = GeographicArea(area_code='E12000001', area_name='Test Area', area_type='utla')
+    db_session.add(area)
+    db_session.commit()
+
+    # Try SQL injection patterns
+    malicious_codes = [
+        "E12000001'; DROP TABLE geographic_areas; --",
+        "E12000001' OR '1'='1",
+        "E12000001' UNION SELECT * FROM vaccines --",
+        "E12000001'; DELETE FROM vaccines; --"
+    ]
+
+    for malicious_code in malicious_codes:
+        # Should return None (not found), not execute SQL
+        result = crud_manager.get_geographic_area(malicious_code)
+        assert result is None, f"Malicious code should not match: {malicious_code}"
+
+    # Verify original area still exists (no DROP/DELETE executed)
+    original = crud_manager.get_geographic_area('E12000001')
+    assert original is not None
+
+
+def test_sql_injection_in_vaccine_code(crud_manager, db_session):
+    """Test that SQL injection attempts in vaccine codes are handled safely."""
+    # Create a legit vaccine
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    db_session.add(vaccine)
+    db_session.commit()
+
+    # Try SQL injection patterns
+    malicious_codes = [
+        "MMR1'; DROP TABLE vaccines; --",
+        "MMR1' OR '1'='1",
+        "'; DELETE FROM vaccines WHERE '1'='1"
+    ]
+
+    for malicious_code in malicious_codes:
+        result = crud_manager.get_vaccine(malicious_code)
+        assert result is None, f"Malicious code should not match: {malicious_code}"
+
+    # Verify vaccines table still intact
+    all_vaccines = crud_manager.get_all_vaccines()
+    assert len(all_vaccines) >= 1
+
+
+def test_sql_injection_in_update_fields(crud_manager, sample_area):
+    """Test that SQL injection in update fields doesn't execute."""
+    malicious_name = "Test'; DROP TABLE geographic_areas; --"
+
+    # This should just update the name field safely
+    result = crud_manager.update_geographic_area(
+        sample_area.area_code,
+        area_name=malicious_name
+    )
+
+    # The malicious string should be stored as data, not executed
+    assert result is not None
+    assert result.area_name == malicious_name
+
+    # Table should still exist
+    all_areas = crud_manager.session.query(GeographicArea).all()
+    assert len(all_areas) >= 1
+
+
+# ============================================================================
+# ERROR HANDLING TESTS
+# ============================================================================
+
+def test_create_duplicate_area_code_fails(crud_manager, sample_area):
+    """Test that creating duplicate area code raises error."""
+    from sqlalchemy.exc import IntegrityError
+
+    with pytest.raises(IntegrityError):
+        crud_manager.create_geographic_area(
+            area_code=sample_area.area_code,  # Duplicate
+            area_name='Another Area',
+            area_type='utla'
+        )
+
+
+def test_create_duplicate_vaccine_code_fails(crud_manager, sample_vaccine):
+    """Test that creating duplicate vaccine code raises error."""
+    from sqlalchemy.exc import IntegrityError
+
+    with pytest.raises(IntegrityError):
+        crud_manager.create_vaccine(
+            vaccine_code=sample_vaccine.vaccine_code,  # Duplicate
+            vaccine_name='Another Vaccine'
+        )
+
+
+def test_get_nonexistent_area_returns_none(crud_manager):
+    """Test that getting non-existent area returns None."""
+    result = crud_manager.get_geographic_area('NONEXISTENT999')
+    assert result is None
+
+
+def test_get_nonexistent_vaccine_returns_none(crud_manager):
+    """Test that getting non-existent vaccine returns None."""
+    result = crud_manager.get_vaccine('NONEXISTENT999')
+    assert result is None
+
+
+def test_update_nonexistent_area_returns_none(crud_manager):
+    """Test that updating non-existent area returns None."""
+    result = crud_manager.update_geographic_area(
+        'NONEXISTENT999',
+        area_name='Should Not Work'
+    )
+    assert result is None
+
+
+def test_update_nonexistent_vaccine_returns_none(crud_manager):
+    """Test that updating non-existent vaccine returns None."""
+    result = crud_manager.update_vaccine(
+        'NONEXISTENT999',
+        vaccine_name='Should Not Work'
+    )
+    assert result is None
+
+
+def test_delete_nonexistent_area_returns_false(crud_manager):
+    """Test that deleting non-existent area returns False."""
+    result = crud_manager.delete_geographic_area('NONEXISTENT999')
+    assert result is False
+
+
+def test_delete_nonexistent_vaccine_returns_false(crud_manager):
+    """Test that deleting non-existent vaccine returns False."""
+    result = crud_manager.delete_vaccine('NONEXISTENT999')
+    assert result is False
+
+
+def test_create_coverage_with_invalid_foreign_key_fails(crud_manager, sample_area):
+    """Test that creating coverage with invalid foreign key fails."""
+    from sqlalchemy.exc import IntegrityError
+
+    with pytest.raises(IntegrityError):
+        crud_manager.create_coverage_record(
+            area_code=sample_area.area_code,
+            vaccine_id=99999,  # Invalid vaccine ID
+            cohort_id=99999,   # Invalid cohort ID
+            year_id=99999,     # Invalid year ID
+            coverage_percentage=85.0
+        )
+
+
+# ============================================================================
+# COMPLEX OPERATION TESTS - upsert_coverage_by_codes
+# ============================================================================
+
+def test_upsert_coverage_creates_new_record(crud_manager, db_session):
+    """Test that upsert creates a new record when it doesn't exist."""
+    # Setup reference data
+    area = GeographicArea(area_code='E10000001', area_name='Test Area', area_type='utla')
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    cohort = AgeCohort(cohort_name='24 months', age_months=24)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+
+    db_session.add_all([area, vaccine, cohort, year])
+    db_session.commit()
+
+    # Upsert (should create)
+    result = crud_manager.upsert_coverage_by_codes(
+        area_code='E10000001',
+        vaccine_code='MMR1',
+        cohort_name='24 months',
+        year=2024,
+        eligible_population=1000,
+        vaccinated_count=850,
+        coverage_percentage=85.0
+    )
+
+    assert result is not None
+    assert result.coverage_percentage == 85.0
+    assert result.vaccinated_count == 850
+    assert result.eligible_population == 1000
+
+
+def test_upsert_coverage_updates_existing_record(crud_manager, db_session):
+    """Test that upsert updates an existing record."""
+    # Setup reference data
+    area = GeographicArea(area_code='E10000001', area_name='Test Area', area_type='utla')
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    cohort = AgeCohort(cohort_name='24 months', age_months=24)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+
+    db_session.add_all([area, vaccine, cohort, year])
+    db_session.commit()
+
+    # Create initial record
+    crud_manager.create_coverage_record(
+        area_code=area.area_code,
+        vaccine_id=vaccine.vaccine_id,
+        cohort_id=cohort.cohort_id,
+        year_id=year.year_id,
+        coverage_percentage=80.0,
+        vaccinated_count=800,
+        eligible_population=1000
+    )
+
+    # Upsert (should update)
+    result = crud_manager.upsert_coverage_by_codes(
+        area_code='E10000001',
+        vaccine_code='MMR1',
+        cohort_name='24 months',
+        year=2024,
+        eligible_population=1100,
+        vaccinated_count=950,
+        coverage_percentage=86.4
+    )
+
+    assert result is not None
+    assert result.coverage_percentage == 86.4
+    assert result.vaccinated_count == 950
+    assert result.eligible_population == 1100
+
+    # Verify only one record exists (update, not duplicate)
+    records = crud_manager.get_coverage_records(
+        vaccine_code='MMR1',
+        area_code='E10000001'
+    )
+    assert len(records) == 1
+
+
+def test_upsert_coverage_with_invalid_vaccine_raises_error(crud_manager, db_session):
+    """Test that upsert with invalid vaccine code raises ValueError."""
+    area = GeographicArea(area_code='E10000001', area_name='Test Area', area_type='utla')
+    cohort = AgeCohort(cohort_name='24 months', age_months=24)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+
+    db_session.add_all([area, cohort, year])
+    db_session.commit()
+
+    with pytest.raises(ValueError, match="Invalid reference data"):
+        crud_manager.upsert_coverage_by_codes(
+            area_code='E10000001',
+            vaccine_code='INVALID_VACCINE',
+            cohort_name='24 months',
+            year=2024,
+            coverage_percentage=85.0
+        )
+
+
+def test_upsert_coverage_with_invalid_cohort_raises_error(crud_manager, db_session):
+    """Test that upsert with invalid cohort name raises ValueError."""
+    area = GeographicArea(area_code='E10000001', area_name='Test Area', area_type='utla')
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+
+    db_session.add_all([area, vaccine, year])
+    db_session.commit()
+
+    with pytest.raises(ValueError, match="Invalid reference data"):
+        crud_manager.upsert_coverage_by_codes(
+            area_code='E10000001',
+            vaccine_code='MMR1',
+            cohort_name='INVALID_COHORT',
+            year=2024,
+            coverage_percentage=85.0
+        )
+
+
+def test_upsert_coverage_with_invalid_year_raises_error(crud_manager, db_session):
+    """Test that upsert with invalid year raises ValueError."""
+    area = GeographicArea(area_code='E10000001', area_name='Test Area', area_type='utla')
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    cohort = AgeCohort(cohort_name='24 months', age_months=24)
+
+    db_session.add_all([area, vaccine, cohort])
+    db_session.commit()
+
+    with pytest.raises(ValueError, match="Invalid reference data"):
+        crud_manager.upsert_coverage_by_codes(
+            area_code='E10000001',
+            vaccine_code='MMR1',
+            cohort_name='24 months',
+            year=1999,  # Year doesn't exist
+            coverage_percentage=85.0
+        )
+
+
+# ============================================================================
+# COMPLEX OPERATION TESTS - update_row_vaccines (batch operations)
+# ============================================================================
+
+def test_update_row_vaccines_creates_multiple_records(crud_manager, db_session):
+    """Test that update_row_vaccines can create multiple vaccine records."""
+    # Setup reference data
+    area = GeographicArea(area_code='E10000001', area_name='Test UTLA', area_type='utla')
+    cohort = AgeCohort(cohort_name='12 months', age_months=12)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+    vaccine1 = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    vaccine2 = Vaccine(vaccine_code='DTaP/IPV/Hib', vaccine_name='DTaP/IPV/Hib')
+
+    db_session.add_all([area, cohort, year, vaccine1, vaccine2])
+    db_session.commit()
+
+    # Update multiple vaccines at once
+    updates = [
+        {
+            'vaccine_code': 'MMR1',
+            'eligible_population': 1000,
+            'vaccinated_count': 950
+        },
+        {
+            'vaccine_code': 'DTaP/IPV/Hib',
+            'eligible_population': 1000,
+            'vaccinated_count': 980
+        }
+    ]
+
+    count = crud_manager.update_row_vaccines(
+        area_code='E10000001',
+        cohort_name='12 months',
+        year=2024,
+        vaccine_updates=updates
+    )
+
+    assert count == 2
+
+    # Verify records were created
+    from src.layer1_database.models import LocalAuthorityCoverage
+    records = db_session.query(LocalAuthorityCoverage).filter_by(
+        area_code='E10000001',
+        cohort_id=cohort.cohort_id,
+        year_id=year.year_id
+    ).all()
+
+    assert len(records) == 2
+
+    # Verify coverage was calculated correctly
+    mmr_record = [r for r in records if r.vaccine_id == vaccine1.vaccine_id][0]
+    assert mmr_record.coverage_percentage == 95.0  # 950/1000 * 100
+
+
+def test_update_row_vaccines_updates_existing_records(crud_manager, db_session):
+    """Test that update_row_vaccines updates existing records."""
+    # Setup reference data
+    from src.layer1_database.models import LocalAuthorityCoverage
+
+    area = GeographicArea(area_code='E10000001', area_name='Test UTLA', area_type='utla')
+    cohort = AgeCohort(cohort_name='12 months', age_months=12)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+
+    db_session.add_all([area, cohort, year, vaccine])
+    db_session.commit()
+
+    # Create initial record
+    initial_record = LocalAuthorityCoverage(
+        area_code=area.area_code,
+        vaccine_id=vaccine.vaccine_id,
+        cohort_id=cohort.cohort_id,
+        year_id=year.year_id,
+        eligible_population=1000,
+        vaccinated_count=800,
+        coverage_percentage=80.0
+    )
+    db_session.add(initial_record)
+    db_session.commit()
+
+    # Update with new values
+    updates = [{
+        'vaccine_code': 'MMR1',
+        'eligible_population': 1100,
+        'vaccinated_count': 990
+    }]
+
+    count = crud_manager.update_row_vaccines(
+        area_code='E10000001',
+        cohort_name='12 months',
+        year=2024,
+        vaccine_updates=updates
+    )
+
+    assert count == 1
+
+    # Verify record was updated (not duplicated)
+    records = db_session.query(LocalAuthorityCoverage).filter_by(
+        area_code='E10000001',
+        cohort_id=cohort.cohort_id,
+        year_id=year.year_id
+    ).all()
+
+    assert len(records) == 1
+    assert records[0].eligible_population == 1100
+    assert records[0].vaccinated_count == 990
+    assert records[0].coverage_percentage == 90.0  # 990/1100 * 100
+
+
+def test_update_row_vaccines_handles_empty_strings(crud_manager, db_session):
+    """Test that update_row_vaccines handles empty string inputs correctly."""
+    # Setup reference data
+    area = GeographicArea(area_code='E10000001', area_name='Test UTLA', area_type='utla')
+    cohort = AgeCohort(cohort_name='12 months', age_months=12)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+
+    db_session.add_all([area, cohort, year, vaccine])
+    db_session.commit()
+
+    # Update with empty strings (should be treated as None)
+    updates = [{
+        'vaccine_code': 'MMR1',
+        'eligible_population': '',
+        'vaccinated_count': '',
+        'coverage_percentage': 85.5
+    }]
+
+    count = crud_manager.update_row_vaccines(
+        area_code='E10000001',
+        cohort_name='12 months',
+        year=2024,
+        vaccine_updates=updates
+    )
+
+    # Should not create record when both counts are empty
+    assert count == 1
+
+
+def test_update_row_vaccines_skips_invalid_vaccine(crud_manager, db_session):
+    """Test that update_row_vaccines skips invalid vaccine codes."""
+    # Setup reference data
+    area = GeographicArea(area_code='E10000001', area_name='Test UTLA', area_type='utla')
+    cohort = AgeCohort(cohort_name='12 months', age_months=12)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+
+    db_session.add_all([area, cohort, year, vaccine])
+    db_session.commit()
+
+    # Include one valid and one invalid vaccine
+    updates = [
+        {
+            'vaccine_code': 'MMR1',
+            'eligible_population': 1000,
+            'vaccinated_count': 950
+        },
+        {
+            'vaccine_code': 'INVALID_VACCINE',
+            'eligible_population': 1000,
+            'vaccinated_count': 980
+        }
+    ]
+
+    count = crud_manager.update_row_vaccines(
+        area_code='E10000001',
+        cohort_name='12 months',
+        year=2024,
+        vaccine_updates=updates
+    )
+
+    # Only the valid vaccine should be processed
+    assert count == 1
+
+
+def test_update_row_vaccines_with_national_coverage(crud_manager, db_session):
+    """Test that update_row_vaccines works with national coverage for countries."""
+    from src.layer1_database.models import NationalCoverage
+
+    # Setup reference data with country-level area
+    area = GeographicArea(area_code='E92000001', area_name='England', area_type='country')
+    cohort = AgeCohort(cohort_name='12 months', age_months=12)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+
+    db_session.add_all([area, cohort, year, vaccine])
+    db_session.commit()
+
+    # Update
+    updates = [{
+        'vaccine_code': 'MMR1',
+        'eligible_population': 500000,
+        'vaccinated_count': 475000
+    }]
+
+    count = crud_manager.update_row_vaccines(
+        area_code='E92000001',
+        cohort_name='12 months',
+        year=2024,
+        vaccine_updates=updates
+    )
+
+    assert count == 1
+
+    # Verify it went into NationalCoverage table, not LocalAuthority
+    national_records = db_session.query(NationalCoverage).filter_by(
+        area_code='E92000001',
+        cohort_id=cohort.cohort_id,
+        year_id=year.year_id
+    ).all()
+
+    assert len(national_records) == 1
+    assert national_records[0].coverage_percentage == 95.0  # 475000/500000 * 100
+
+
+def test_update_row_vaccines_raises_error_for_invalid_references(crud_manager):
+    """Test that update_row_vaccines raises ValueError for invalid references."""
+    updates = [{
+        'vaccine_code': 'MMR1',
+        'eligible_population': 1000,
+        'vaccinated_count': 950
+    }]
+
+    with pytest.raises(ValueError, match="Invalid reference data"):
+        crud_manager.update_row_vaccines(
+            area_code='INVALID_AREA',
+            cohort_name='12 months',
+            year=2024,
+            vaccine_updates=updates
+        )
+
+
+def test_delete_coverage_by_codes_success(crud_manager, db_session):
+    """Test successful deletion using human-readable codes."""
+    # Setup reference data
+    area = GeographicArea(area_code='E10000001', area_name='Test Area', area_type='utla')
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    cohort = AgeCohort(cohort_name='24 months', age_months=24)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+
+    db_session.add_all([area, vaccine, cohort, year])
+    db_session.commit()
+
+    # Create coverage record
+    crud_manager.create_coverage_record(
+        area_code=area.area_code,
+        vaccine_id=vaccine.vaccine_id,
+        cohort_id=cohort.cohort_id,
+        year_id=year.year_id,
+        coverage_percentage=85.0
+    )
+
+    # Delete it
+    result = crud_manager.delete_coverage_by_codes(
+        area_code='E10000001',
+        vaccine_code='MMR1',
+        cohort_name='24 months',
+        year=2024
+    )
+
+    assert result is True
+
+    # Verify it's deleted
+    records = crud_manager.get_coverage_records(
+        vaccine_code='MMR1',
+        area_code='E10000001'
+    )
+    assert len(records) == 0
+
+
+def test_delete_coverage_by_codes_returns_false_for_nonexistent(crud_manager, db_session):
+    """Test that delete returns False for non-existent record."""
+    # Setup reference data
+    area = GeographicArea(area_code='E10000001', area_name='Test Area', area_type='utla')
+    vaccine = Vaccine(vaccine_code='MMR1', vaccine_name='MMR First Dose')
+    cohort = AgeCohort(cohort_name='24 months', age_months=24)
+    year = FinancialYear(year_label='2024-2025', year_start=2024, year_end=2025)
+
+    db_session.add_all([area, vaccine, cohort, year])
+    db_session.commit()
+
+    # Try to delete non-existent record
+    result = crud_manager.delete_coverage_by_codes(
+        area_code='E10000001',
+        vaccine_code='MMR1',
+        cohort_name='24 months',
+        year=2024
+    )
+
+    assert result is False

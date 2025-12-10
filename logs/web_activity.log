@@ -671,3 +671,236 @@
 [2025-12-10 12:37:24] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
 [2025-12-10 12:37:24] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
 [2025-12-10 12:37:28] QUERY: utla_table | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 18:39:19] VIEW: dashboard | ods_tables
+[2025-12-10 18:39:20] EXPORT: csv | vaccine=MMR1
+[2025-12-10 18:39:20] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 18:39:20] QUERY: utla_table | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 18:39:21] QUERY: regional_table | cohort=24 months
+[2025-12-10 18:39:21] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-10 18:39:21] CREATE: vaccine | code=TEST999
+[2025-12-10 18:39:21] DELETE: vaccine | code=TEST999
+[2025-12-10 18:39:21] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-10 18:39:21] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:21] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:21] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:21] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:21] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:21] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:22] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:22] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:22] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:22] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:39:22] UPDATE: vaccine | code=MMR1'; DROP TABLE vaccines; --
+[2025-12-10 18:39:22] CREATE: vaccine | code=TEST
+[2025-12-10 18:39:22] CREATE: vaccine | code=
+[2025-12-10 18:39:22] UPDATE: coverage | area=E10000001, vaccine=MMR1
+[2025-12-10 18:39:23] UPDATE: coverage | area=E10000001, vaccine=MMR1
+[2025-12-10 18:39:24] QUERY: table1_uk_by_country | cohort=12 months, year=invalid_year, filters=0 columns
+[2025-12-10 18:39:24] ERROR: table1 | This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.IntegrityError) FOREIGN KEY constraint failed
+[SQL: INSERT INTO local_authority_coverage (year_id, area_code, cohort_id, vaccine_id, eligible_population, vaccinated_count, coverage_percentage, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (16, 'E10000001', 2, 3, None, None, -5.0, None)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+[2025-12-10 18:39:24] UPDATE: coverage | area=E10000001, vaccine=MMR1
+[2025-12-10 18:39:25] DELETE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:39:26] UPDATE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:39:26] UPDATE: vaccine | code=NONEXISTENT_999
+[2025-12-10 18:39:27] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:39:27] ERROR: row_update | This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.IntegrityError) FOREIGN KEY constraint failed
+[SQL: INSERT INTO local_authority_coverage (year_id, area_code, cohort_id, vaccine_id, eligible_population, vaccinated_count, coverage_percentage, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (16, 'E10000001', 2, 3, None, None, -5.0, None)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+[2025-12-10 18:39:28] CREATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:39:28] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:39:28] ERROR: row_update | This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.IntegrityError) FOREIGN KEY constraint failed
+[SQL: INSERT INTO local_authority_coverage (year_id, area_code, cohort_id, vaccine_id, eligible_population, vaccinated_count, coverage_percentage, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: (16, 'E10000001', 2, 3, None, None, -5.0, None)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+[2025-12-10 18:40:08] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:08] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:08] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:09] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:09] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:09] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:09] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:09] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:09] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:09] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:40:19] UPDATE: vaccine | code=MMR1'; DROP TABLE vaccines; --
+[2025-12-10 18:43:55] VIEW: dashboard | ods_tables
+[2025-12-10 18:43:55] EXPORT: csv | vaccine=MMR1
+[2025-12-10 18:43:56] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 18:43:56] QUERY: utla_table | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 18:43:56] QUERY: regional_table | cohort=24 months
+[2025-12-10 18:43:56] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-10 18:43:56] CREATE: vaccine | code=TEST999
+[2025-12-10 18:43:57] DELETE: vaccine | code=TEST999
+[2025-12-10 18:43:57] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-10 18:43:57] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:43:57] UPDATE: vaccine | code=MMR1'; DROP TABLE vaccines; --
+[2025-12-10 18:43:57] CREATE: vaccine | code=TEST
+[2025-12-10 18:43:57] CREATE: vaccine | code=
+[2025-12-10 18:43:57] UPDATE: coverage | area=E10000001, vaccine=MMR1
+[2025-12-10 18:43:57] UPDATE: coverage | area=E10000001, vaccine=MMR1
+[2025-12-10 18:43:57] QUERY: table1_uk_by_country | cohort=12 months, year=invalid_year, filters=0 columns
+[2025-12-10 18:43:57] UPDATE: coverage | area=E10000001, vaccine=MMR1
+[2025-12-10 18:43:57] DELETE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:43:57] UPDATE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:43:57] UPDATE: vaccine | code=NONEXISTENT_999
+[2025-12-10 18:43:57] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:43:57] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 18:43:57] CREATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:43:57] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:43:57] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:43:57] DELETE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:43:57] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:43:57] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 18:46:39] VIEW: dashboard | ods_tables
+[2025-12-10 18:48:15] ERROR: vaccine_crud | 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+[2025-12-10 18:48:16] QUERY: table1_uk_by_country | cohort=12 months, year=invalid_year, filters=0 columns
+[2025-12-10 18:48:57] VIEW: dashboard | ods_tables
+[2025-12-10 18:48:57] EXPORT: csv | vaccine=MMR1
+[2025-12-10 18:48:57] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 18:48:57] QUERY: utla_table | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 18:48:58] QUERY: regional_table | cohort=24 months
+[2025-12-10 18:48:58] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-10 18:48:58] CREATE: vaccine | code=TEST999
+[2025-12-10 18:48:58] DELETE: vaccine | code=TEST999
+[2025-12-10 18:48:58] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-10 18:48:59] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:48:59] UPDATE: vaccine | code=MMR1'; DROP TABLE vaccines; --
+[2025-12-10 18:48:59] ERROR: vaccine_crud | 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+[2025-12-10 18:48:59] QUERY: table1_uk_by_country | cohort=12 months, year=invalid_year, filters=0 columns
+[2025-12-10 18:48:59] DELETE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:48:59] UPDATE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:48:59] UPDATE: vaccine | code=NONEXISTENT_999
+[2025-12-10 18:48:59] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:48:59] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 18:48:59] CREATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:48:59] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:48:59] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:48:59] DELETE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:48:59] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:48:59] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 18:54:02] VIEW: dashboard | ods_tables
+[2025-12-10 18:54:03] PAGE_LOAD: ods_tables | table_view
+[2025-12-10 18:54:03] VIEW: dashboard | activity_logs
+[2025-12-10 18:54:03] EXPORT: csv | vaccine=MMR1
+[2025-12-10 18:54:03] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 18:54:03] QUERY: utla_table | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 18:54:03] QUERY: regional_table | cohort=24 months
+[2025-12-10 18:54:04] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-10 18:54:04] CREATE: vaccine | code=TEST999
+[2025-12-10 18:54:04] DELETE: vaccine | code=TEST999
+[2025-12-10 18:54:04] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-10 18:54:04] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 18:54:04] UPDATE: vaccine | code=MMR1'; DROP TABLE vaccines; --
+[2025-12-10 18:54:04] ERROR: vaccine_crud | 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+[2025-12-10 18:54:04] QUERY: table1_uk_by_country | cohort=12 months, year=invalid_year, filters=0 columns
+[2025-12-10 18:54:04] DELETE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:54:04] UPDATE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 18:54:04] UPDATE: vaccine | code=NONEXISTENT_999
+[2025-12-10 18:54:04] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:54:04] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 18:54:04] CREATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:54:04] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:54:04] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:54:04] DELETE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 18:54:04] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 18:54:04] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 19:02:06] VIEW: dashboard | ods_tables
+[2025-12-10 19:02:06] PAGE_LOAD: ods_tables | table_view
+[2025-12-10 19:02:06] VIEW: dashboard | activity_logs
+[2025-12-10 19:02:06] EXPORT: csv | vaccine=MMR1
+[2025-12-10 19:02:06] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 19:02:06] QUERY: utla_table | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 19:02:07] QUERY: regional_table | cohort=24 months
+[2025-12-10 19:02:08] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-10 19:02:08] CREATE: vaccine | code=TEST999
+[2025-12-10 19:02:08] DELETE: vaccine | code=TEST999
+[2025-12-10 19:02:08] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-10 19:02:08] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:08] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:08] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:08] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:08] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:08] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:08] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:09] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:09] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:09] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:02:09] UPDATE: vaccine | code=MMR1'; DROP TABLE vaccines; --
+[2025-12-10 19:02:09] ERROR: vaccine_crud | 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+[2025-12-10 19:02:09] QUERY: table1_uk_by_country | cohort=12 months, year=invalid_year, filters=0 columns
+[2025-12-10 19:02:09] DELETE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 19:02:09] UPDATE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 19:02:09] UPDATE: vaccine | code=NONEXISTENT_999
+[2025-12-10 19:02:09] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 19:02:09] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 19:02:09] CREATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:02:09] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:02:09] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:02:09] DELETE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:02:09] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 19:02:09] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 19:06:29] VIEW: dashboard | ods_tables
+[2025-12-10 19:06:29] PAGE_LOAD: ods_tables | table_view
+[2025-12-10 19:06:29] VIEW: dashboard | activity_logs
+[2025-12-10 19:06:30] EXPORT: csv | vaccine=MMR1
+[2025-12-10 19:06:30] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 19:06:30] QUERY: utla_table | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 19:06:30] QUERY: regional_table | cohort=24 months
+[2025-12-10 19:06:31] QUERY: england_summary | cohort=24 months, year=2024
+[2025-12-10 19:06:31] CREATE: vaccine | code=TEST999
+[2025-12-10 19:06:31] DELETE: vaccine | code=TEST999
+[2025-12-10 19:06:31] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-10 19:06:31] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] CREATE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] DELETE: vaccine | code=XSS_TEST
+[2025-12-10 19:06:31] UPDATE: vaccine | code=MMR1'; DROP TABLE vaccines; --
+[2025-12-10 19:06:31] ERROR: vaccine_crud | 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+[2025-12-10 19:06:31] QUERY: table1_uk_by_country | cohort=12 months, year=invalid_year, filters=0 columns
+[2025-12-10 19:06:31] DELETE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 19:06:31] UPDATE: vaccine | code=NONEXISTENT_VACCINE_999
+[2025-12-10 19:06:31] UPDATE: vaccine | code=NONEXISTENT_999
+[2025-12-10 19:06:31] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 19:06:31] ERROR: row_update | Invalid reference data: year, cohort, or area not found
+[2025-12-10 19:06:31] CREATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:06:31] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:06:31] UPDATE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:06:31] DELETE: vaccine | code=CONCURRENT_TEST
+[2025-12-10 19:06:31] UPDATE: row | area=E10000001, updates=0
+[2025-12-10 19:06:31] ERROR: row_update | Invalid reference data: year, cohort, or area not found

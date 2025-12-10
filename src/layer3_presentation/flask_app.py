@@ -196,92 +196,232 @@ def get_log_summary():
 @app.route('/api/crud/vaccines', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def manage_vaccines():
     """CRUD operations for vaccines."""
-    if request.method == 'GET':
-        vaccines = crud.get_all_vaccines()
-        return jsonify([
-            {'vaccine_code': v.vaccine_code, 'vaccine_name': v.vaccine_name}
-            for v in vaccines
-        ])
+    try:
+        if request.method == 'GET':
+            vaccines = crud.get_all_vaccines()
+            return jsonify([
+                {'vaccine_code': v.vaccine_code, 'vaccine_name': v.vaccine_name}
+                for v in vaccines
+            ])
 
-    elif request.method == 'POST':
-        data = request.json
-        logger.log_action("create", "vaccine", f"code={data.get('vaccine_code')}")
-        vaccine = crud.create_vaccine(
-            vaccine_code=data['vaccine_code'],
-            vaccine_name=data['vaccine_name']
-        )
-        return jsonify({
-            'vaccine_code': vaccine.vaccine_code,
-            'vaccine_name': vaccine.vaccine_name
-        }), 201
+        elif request.method == 'POST':
+            data = request.json
 
-    elif request.method == 'PUT':
-        data = request.json
-        logger.log_action("update", "vaccine", f"code={data.get('vaccine_code')}")
-        vaccine = crud.update_vaccine(
-            vaccine_code=data['vaccine_code'],
-            vaccine_name=data['vaccine_name']
-        )
-        if vaccine:
-            return jsonify({
-                'vaccine_code': vaccine.vaccine_code,
-                'vaccine_name': vaccine.vaccine_name
-            })
-        return jsonify({'error': 'Vaccine not found'}), 404
+            # Input validation
+            if not data or 'vaccine_code' not in data or 'vaccine_name' not in data:
+                return jsonify({'error': 'Missing required fields: vaccine_code and vaccine_name'}), 400
 
-    elif request.method == 'DELETE':
-        data = request.json
-        logger.log_action("delete", "vaccine", f"code={data.get('vaccine_code')}")
-        success = crud.delete_vaccine(data['vaccine_code'])
-        if success:
-            return jsonify({'message': 'Vaccine deleted'})
-        return jsonify({'error': 'Vaccine not found'}), 404
+            vaccine_code = data['vaccine_code'].strip() if isinstance(data['vaccine_code'], str) else ''
+            vaccine_name = data['vaccine_name'].strip() if isinstance(data['vaccine_name'], str) else ''
+
+            if not vaccine_code or not vaccine_name:
+                return jsonify({'error': 'vaccine_code and vaccine_name cannot be empty'}), 400
+
+            if len(vaccine_code) > 50:
+                return jsonify({'error': 'vaccine_code too long (max 50 characters)'}), 400
+
+            if len(vaccine_name) > 200:
+                return jsonify({'error': 'vaccine_name too long (max 200 characters)'}), 400
+
+            logger.log_action("create", "vaccine", f"code={vaccine_code}")
+
+            try:
+                vaccine = crud.create_vaccine(
+                    vaccine_code=vaccine_code,
+                    vaccine_name=vaccine_name
+                )
+                return jsonify({
+                    'vaccine_code': vaccine.vaccine_code,
+                    'vaccine_name': vaccine.vaccine_name
+                }), 201
+            except Exception as e:
+                session.rollback()
+                if 'UNIQUE constraint failed' in str(e) or 'duplicate' in str(e).lower():
+                    return jsonify({'error': 'Vaccine code already exists'}), 409
+                raise
+
+        elif request.method == 'PUT':
+            data = request.json
+
+            # Input validation
+            if not data or 'vaccine_code' not in data or 'vaccine_name' not in data:
+                return jsonify({'error': 'Missing required fields'}), 400
+
+            vaccine_code = data['vaccine_code'].strip() if isinstance(data['vaccine_code'], str) else ''
+            vaccine_name = data['vaccine_name'].strip() if isinstance(data['vaccine_name'], str) else ''
+
+            if not vaccine_code or not vaccine_name:
+                return jsonify({'error': 'Fields cannot be empty'}), 400
+
+            logger.log_action("update", "vaccine", f"code={vaccine_code}")
+
+            try:
+                vaccine = crud.update_vaccine(
+                    vaccine_code=vaccine_code,
+                    vaccine_name=vaccine_name
+                )
+                if vaccine:
+                    return jsonify({
+                        'vaccine_code': vaccine.vaccine_code,
+                        'vaccine_name': vaccine.vaccine_name
+                    })
+                return jsonify({'error': 'Vaccine not found'}), 404
+            except Exception as e:
+                session.rollback()
+                raise
+
+        elif request.method == 'DELETE':
+            data = request.json
+
+            if not data or 'vaccine_code' not in data:
+                return jsonify({'error': 'Missing required field: vaccine_code'}), 400
+
+            vaccine_code = data['vaccine_code']
+            logger.log_action("delete", "vaccine", f"code={vaccine_code}")
+
+            try:
+                success = crud.delete_vaccine(vaccine_code)
+                if success:
+                    return jsonify({'message': 'Vaccine deleted'})
+                return jsonify({'error': 'Vaccine not found'}), 404
+            except Exception as e:
+                session.rollback()
+                raise
+
+    except Exception as e:
+        session.rollback()
+        logger.log_action("error", "vaccine_crud", str(e))
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/api/crud/coverage', methods=['POST', 'DELETE'])
 def manage_coverage():
     """CRUD operations for coverage records."""
-    if request.method == 'POST':
-        data = request.json
-        
-        logger.log_action("update", "coverage", f"area={data.get('area_code')}, vaccine={data.get('vaccine_code')}")
-        
-        try:
-            # Delegate to CRUD service
-            result = crud.upsert_coverage_by_codes(
-                area_code=data['area_code'],
-                vaccine_code=data['vaccine_code'],
-                cohort_name=data.get('cohort_name', '24 months'),
-                year=data.get('year', 2024),
-                eligible_population=data.get('eligible_population'),
-                vaccinated_count=data.get('vaccinated_count'),
-                coverage_percentage=data.get('coverage_percentage')
-            )
-            return jsonify({'message': 'Record saved', 'id': result.coverage_id})
-            
-        except ValueError as e:
-            return jsonify({'error': str(e)}), 400
+    try:
+        if request.method == 'POST':
+            data = request.json
 
-    elif request.method == 'DELETE':
-        data = request.json
-        logger.log_action("delete", "coverage", f"area={data.get('area_code')}, vaccine={data.get('vaccine_code')}")
-        
-        try:
-            # Delegate to CRUD service
-            deleted = crud.delete_coverage_by_codes(
-                area_code=data['area_code'],
-                vaccine_code=data['vaccine_code'],
-                cohort_name=data.get('cohort_name', '24 months'),
-                year=data.get('year', 2024)
-            )
-            
-            if deleted:
-                return jsonify({'message': 'Record deleted'})
-            else:
-                return jsonify({'error': 'Record not found'}), 404
-                
-        except ValueError as e:
-            return jsonify({'error': str(e)}), 400
+            # Input validation
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+
+            # Validate required fields
+            required_fields = ['area_code', 'vaccine_code']
+            missing_fields = [f for f in required_fields if f not in data]
+            if missing_fields:
+                return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+            # Validate and sanitize year
+            year = data.get('year', 2024)
+            if not isinstance(year, int):
+                try:
+                    year = int(year)
+                except (ValueError, TypeError):
+                    return jsonify({'error': 'year must be an integer'}), 400
+
+            if year < 2000 or year > 2100:
+                return jsonify({'error': 'year must be between 2000 and 2100'}), 400
+
+            # Validate coverage percentage if provided
+            coverage_pct = data.get('coverage_percentage')
+            if coverage_pct is not None:
+                try:
+                    coverage_pct = float(coverage_pct)
+                    if coverage_pct < 0:
+                        return jsonify({'error': 'coverage_percentage cannot be negative'}), 400
+                    if coverage_pct > 100:
+                        return jsonify({'error': 'coverage_percentage cannot exceed 100'}), 400
+                except (ValueError, TypeError):
+                    return jsonify({'error': 'coverage_percentage must be a number'}), 400
+
+            # Validate population counts if provided
+            eligible = data.get('eligible_population')
+            vaccinated = data.get('vaccinated_count')
+
+            if eligible is not None:
+                try:
+                    eligible = int(eligible)
+                    if eligible < 0:
+                        return jsonify({'error': 'eligible_population cannot be negative'}), 400
+                    if eligible > 10000000:  # Reasonable upper limit
+                        return jsonify({'error': 'eligible_population unreasonably large'}), 400
+                except (ValueError, TypeError):
+                    return jsonify({'error': 'eligible_population must be an integer'}), 400
+
+            if vaccinated is not None:
+                try:
+                    vaccinated = int(vaccinated)
+                    if vaccinated < 0:
+                        return jsonify({'error': 'vaccinated_count cannot be negative'}), 400
+                    if vaccinated > 10000000:
+                        return jsonify({'error': 'vaccinated_count unreasonably large'}), 400
+                except (ValueError, TypeError):
+                    return jsonify({'error': 'vaccinated_count must be an integer'}), 400
+
+            # Validate counts relationship
+            if eligible is not None and vaccinated is not None and vaccinated > eligible:
+                return jsonify({'error': 'vaccinated_count cannot exceed eligible_population'}), 400
+
+            logger.log_action("update", "coverage", f"area={data.get('area_code')}, vaccine={data.get('vaccine_code')}")
+
+            try:
+                # Delegate to CRUD service
+                result = crud.upsert_coverage_by_codes(
+                    area_code=data['area_code'],
+                    vaccine_code=data['vaccine_code'],
+                    cohort_name=data.get('cohort_name', '24 months'),
+                    year=year,
+                    eligible_population=eligible,
+                    vaccinated_count=vaccinated,
+                    coverage_percentage=coverage_pct
+                )
+                return jsonify({'message': 'Record saved', 'id': result.coverage_id})
+
+            except ValueError as e:
+                session.rollback()
+                return jsonify({'error': str(e)}), 400
+            except Exception as e:
+                session.rollback()
+                raise
+
+        elif request.method == 'DELETE':
+            data = request.json
+
+            if not data:
+                return jsonify({'error': 'No data provided'}), 400
+
+            required_fields = ['area_code', 'vaccine_code']
+            missing_fields = [f for f in required_fields if f not in data]
+            if missing_fields:
+                return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+            logger.log_action("delete", "coverage", f"area={data.get('area_code')}, vaccine={data.get('vaccine_code')}")
+
+            try:
+                # Delegate to CRUD service
+                deleted = crud.delete_coverage_by_codes(
+                    area_code=data['area_code'],
+                    vaccine_code=data['vaccine_code'],
+                    cohort_name=data.get('cohort_name', '24 months'),
+                    year=data.get('year', 2024)
+                )
+
+                if deleted:
+                    return jsonify({'message': 'Record deleted'})
+                else:
+                    return jsonify({'error': 'Record not found'}), 404
+
+            except ValueError as e:
+                session.rollback()
+                return jsonify({'error': str(e)}), 400
+            except Exception as e:
+                session.rollback()
+                raise
+
+    except Exception as e:
+        session.rollback()
+        logger.log_action("error", "coverage_crud", str(e))
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/api/tables/utla', methods=['POST'])
