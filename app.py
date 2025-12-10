@@ -48,6 +48,43 @@ def index():
     logger.log_action("view", "dashboard", "ods_tables")
     return render_template('ods_tables.html')
 
+
+@app.route('/ods_tables')
+def ods_tables():
+    """Render ODS tables page."""
+    logger.log_action("page_load", "ods_tables", "table_view")
+    return render_template('ods_tables.html')
+
+
+@app.route('/api/reload-data', methods=['POST'])
+def reload_data():
+    """Reload original data from CSV files using dataloader module."""
+    try:
+        logger.log_action("admin", "reload_data", "starting")
+        
+        # Import and call the dataloader module
+        import create_database
+        
+        # Call the main function to reload all data
+        create_database.main()
+        
+        logger.log_action("admin", "reload_data", "completed")
+        return jsonify({
+            'message': 'Database reloaded successfully',
+            'status': 'success'
+        })
+        
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        logger.log_action("error", "reload_data", str(e))
+        print(f"RELOAD ERROR: {error_trace}")
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        }), 500
+
+
 @app.route('/tables')
 def table_dashboard():
     """Table view dashboard."""
@@ -308,77 +345,33 @@ def visualize_table_comparison():
         selected_areas = data.get('selected_areas', [])
         selected_vaccines = data.get('selected_vaccines', [])
 
-        logger.log_action("visualize", "table_comparison", f"table={table_type}, areas={len(selected_areas)}")
+        logger.log_action("visualize", "table_comparison", 
+                         f"table={table_type}, areas={len(selected_areas)}, vaccines={len(selected_vaccines)}")
 
-        # Get table data
-        if table_type == 'table1':
-            table_data = table_builder.get_table1_uk_by_country(cohort_name=cohort_name, year=year)
-            rows = table_data.get('data', [])
-        elif table_type == 'table4':
-            rows = table_builder.get_utla_table(cohort_name=cohort_name, year=year)
-        else:
-            return jsonify({'error': 'Unsupported table type'}), 400
+        # Delegate all logic to visualization service
+        chart_path = visualizer.generate_table_comparison_chart(
+            table_type=table_type,
+            cohort_name=cohort_name,
+            year=year,
+            selected_areas=selected_areas,
+            selected_vaccines=selected_vaccines,
+            table_builder=table_builder,
+            analyzer=analyzer
+        )
 
-        if not rows:
-            return jsonify({'error': 'No table data found'}), 404
+        return jsonify({'chart_url': f"/static/charts/{chart_path.name}"})
 
-        # Filter to selected areas
-        if selected_areas:
-            rows = [row for row in rows if 
-                    row.get('geographic_area') in selected_areas or 
-                    row.get('local_authority') in selected_areas]
-
-        if not rows:
-            return jsonify({'error': 'No data for selected areas'}), 404
-
-        if not selected_vaccines:
-            return jsonify({'error': 'Please select at least one vaccine to visualize'}), 400
-
-        # Replace None values with 0 to prevent math errors
-        for row in rows:
-            for vaccine_col in selected_vaccines:
-                if row.get(vaccine_col) is None:
-                    row[vaccine_col] = 0
-
-        # Filter to only vaccines that have actual data (not all zeros)
-        vaccines_with_data = []
-        for vaccine_col in selected_vaccines:
-            has_data = any(row.get(vaccine_col, 0) > 0 for row in rows)
-            if has_data:
-                vaccines_with_data.append(vaccine_col)
-        
-        if not vaccines_with_data:
-            return jsonify({'error': 'No vaccine data available to visualize'}), 404
-        
-        selected_vaccines = vaccines_with_data
-
-        # Generate chart
-        if len(rows) > 10:
-            # Use average comparison for large datasets (unless specific areas selected reduced it)
-            chart_path = visualizer.plot_column_averages(
-                rows,
-                selected_vaccines=selected_vaccines,
-                title=f"Average Vaccine Coverage (All Areas) - {cohort_name}",
-                filename=f"table_comparison_{table_type}_{cohort_name.replace(' ', '_')}.png"
-            )
-        else:
-            # Use detailed comparison for small datasets (filtered areas or Table 1)
-            chart_path = visualizer.plot_table_comparison(
-                rows,
-                selected_vaccines=selected_vaccines,
-                title=f"Vaccine Coverage Comparison - {cohort_name}",
-                filename=f"table_comparison_{table_type}_{cohort_name.replace(' ', '_')}.png"
-            )
-
-        return jsonify({
-            'chart_url': f"/static/charts/{chart_path.name}"
-        })
+    except ValueError as e:
+        # Application errors (expected - invalid input, no data, etc.)
+        logger.log_action("error", "viz_table_comparison", str(e))
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
+        # Unexpected errors
         import traceback
         error_trace = traceback.format_exc()
         logger.log_action("error", "viz_table_comparison", str(e))
         print(f"VISUALIZATION ERROR: {error_trace}")  # Print to console for debugging
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/api/export/csv', methods=['POST'])
@@ -473,84 +466,67 @@ def manage_coverage():
     if request.method == 'POST':
         data = request.json
         
-        # Log the action
         logger.log_action("update", "coverage", f"area={data.get('area_code')}, vaccine={data.get('vaccine_code')}")
         
-        # Get IDs from codes/names
-        year_obj = session.query(FinancialYear).filter_by(year_start=data.get('year', 2024)).first()
-        cohort = session.query(AgeCohort).filter_by(cohort_name=data.get('cohort_name', '24 months')).first()
-        vaccine = session.query(Vaccine).filter_by(vaccine_code=data.get('vaccine_code')).first()
-        # Area code is passed directly as area_code
-        
-        if not all([year_obj, cohort, vaccine, data.get('area_code')]):
-            return jsonify({'error': 'Invalid reference data provided'}), 400
-            
-        # Check if record exists
-        existing = crud.get_coverage_by_keys(
-            area_code=data['area_code'],
-            vaccine_id=vaccine.vaccine_id,
-            cohort_id=cohort.cohort_id,
-            year_id=year_obj.year_id
-        )
-        
-        if existing:
-            # Update
-            updated = crud.update_coverage_record(
-                coverage_id=existing.coverage_id,
-                eligible_population=data.get('eligible_population'),
-                vaccinated_count=data.get('vaccinated_count'),
-                coverage_percentage=data.get('coverage_percentage')
-            )
-            return jsonify({'message': 'Record updated', 'id': updated.coverage_id})
-        else:
-            # Create
-            created = crud.create_coverage_record(
+        try:
+            # Delegate to CRUD service
+            result = crud.upsert_coverage_by_codes(
                 area_code=data['area_code'],
-                vaccine_id=vaccine.vaccine_id,
-                cohort_id=cohort.cohort_id,
-                year_id=year_obj.year_id,
+                vaccine_code=data['vaccine_code'],
+                cohort_name=data.get('cohort_name', '24 months'),
+                year=data.get('year', 2024),
                 eligible_population=data.get('eligible_population'),
                 vaccinated_count=data.get('vaccinated_count'),
                 coverage_percentage=data.get('coverage_percentage')
             )
-            return jsonify({'message': 'Record created', 'id': created.coverage_id})
+            return jsonify({'message': 'Record saved', 'id': result.coverage_id})
+            
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
 
     elif request.method == 'DELETE':
         data = request.json
         logger.log_action("delete", "coverage", f"area={data.get('area_code')}, vaccine={data.get('vaccine_code')}")
         
-        # Get IDs
-        year_obj = session.query(FinancialYear).filter_by(year_start=data.get('year', 2024)).first()
-        cohort = session.query(AgeCohort).filter_by(cohort_name=data.get('cohort_name', '24 months')).first()
-        vaccine = session.query(Vaccine).filter_by(vaccine_code=data.get('vaccine_code')).first()
-        
-        if not all([year_obj, cohort, vaccine, data.get('area_code')]):
-            return jsonify({'error': 'Record not found (invalid refs)'}), 404
+        try:
+            # Delegate to CRUD service
+            deleted = crud.delete_coverage_by_codes(
+                area_code=data['area_code'],
+                vaccine_code=data['vaccine_code'],
+                cohort_name=data.get('cohort_name', '24 months'),
+                year=data.get('year', 2024)
+            )
             
-        existing = crud.get_coverage_by_keys(
-            area_code=data['area_code'],
-            vaccine_id=vaccine.vaccine_id,
-            cohort_id=cohort.cohort_id,
-            year_id=year_obj.year_id
-        )
-        
-        if existing:
-            crud.delete_coverage_record(existing.coverage_id)
-            return jsonify({'message': 'Record deleted'})
-        
-        return jsonify({'error': 'Record not found'}), 404
+            if deleted:
+                return jsonify({'message': 'Record deleted'})
+            else:
+                return jsonify({'error': 'Record not found'}), 404
+                
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
 
 
 @app.route('/api/tables/utla', methods=['POST'])
 def get_utla_table():
-    """Get UTLA coverage table in original ODS format."""
+    """Get UTLA coverage table with optional server-side filtering."""
     data = request.json
     cohort_name = data.get('cohort_name', '24 months')
     year = data.get('year', 2024)
+    filters = data.get('filters', {})  # NEW: Accept filter parameters
 
-    logger.log_action("query", "utla_table", f"cohort={cohort_name}, year={year}")
+    logger.log_action("query", "utla_table", f"cohort={cohort_name}, year={year}, filters={len(filters)} columns")
 
     table_data = table_builder.get_utla_table(cohort_name=cohort_name, year=year)
+    
+    # Apply server-side filtering using analyzer module
+    if filters and table_data:
+        filtered_data = analyzer.filter_table_data(
+            table_data=table_data,
+            filters=filters
+        )
+        logger.log_action("filter", "utla_backend_filter", f"Filtered to {len(filtered_data)} of {len(table_data)} rows")
+    else:
+        filtered_data = table_data
 
     return jsonify({
         'title': f'Table 4. Completed primary immunisations in children aged {cohort_name} in England by UTLA',
@@ -562,8 +538,10 @@ def get_utla_table():
         ],
         'cohort': cohort_name,
         'year': year,
-        'row_count': len(table_data),
-        'data': table_data
+        'row_count': len(filtered_data),
+        'total_rows': len(table_data),
+        'filtered': bool(filters),
+        'data': filtered_data
     })
 
 
@@ -610,98 +588,24 @@ def manage_row():
         
         logger.log_action("update", "row", f"area={area_code}, updates={len(updates)}")
         
-        # Get References
-        year_obj = session.query(FinancialYear).filter_by(year_start=year_val).first()
-        cohort = session.query(AgeCohort).filter_by(cohort_name=cohort_name).first()
-        
-        if not all([year_obj, cohort, area_code]):
-            return jsonify({'error': 'Invalid reference data'}), 400
-
-        success_count = 0
-        
-        # Determine which table to use based on area type
-        area = session.query(GeographicArea).filter_by(area_code=area_code).first()
-        if not area:
-            return jsonify({'error': 'Area not found'}), 404
-        
-        # Table 1 uses NationalCoverage (country/UK), Table 4 uses LocalAuthorityCoverage (UTLA)
-        is_national = area.area_type in ['country', 'uk']
-        CoverageModel = NationalCoverage if is_national else LocalAuthorityCoverage
-        
         try:
-            for item in updates:
-                vaccine_code = item.get('vaccine_code')
-                vaccine = session.query(Vaccine).filter_by(vaccine_code=vaccine_code).first()
-                
-                if not vaccine:
-                    logger.log_action("error", "row_update", f"Vaccine not found: {vaccine_code}")
-                    # Try fuzzy matching or alternative format?
-                    # E.g. DTaP/IPV/Hib vs DTaP_IPV_Hib
-                    if '_' in vaccine_code and '/' not in vaccine_code:
-                         alt_code = vaccine_code.replace('_', '/')
-                         vaccine = session.query(Vaccine).filter_by(vaccine_code=alt_code).first()
-                         if vaccine:
-                             logger.log_action("info", "row_update", f"Matched via replacement: {vaccine_code} -> {alt_code}")
-
-                if not vaccine:
-                     logger.log_action("error", "row_update", f"STILL Vaccine not found: {vaccine_code}")
-                     continue
-                    
-                # Calculate percentage
-                eligible = item.get('eligible_population')
-                vaccinated = item.get('vaccinated_count')
-                
-                # Handle empty strings/nulls converting to None
-                if eligible == '': eligible = None
-                if vaccinated == '': vaccinated = None
-                
-                if eligible is not None: eligible = int(eligible)
-                if vaccinated is not None: vaccinated = int(vaccinated)
-                
-                coverage_percentage = 0.0
-                if eligible and vaccinated is not None:
-                     if eligible > 0:
-                        coverage_percentage = (vaccinated / eligible) * 100
-                elif item.get('coverage_percentage') is not None:
-                    chart_val = item.get('coverage_percentage')
-                    if chart_val != '':
-                        coverage_percentage = float(chart_val)
-
-                # Find existing record
-                existing = session.query(CoverageModel).filter_by(
-                    area_code=area_code,
-                    vaccine_id=vaccine.vaccine_id,
-                    cohort_id=cohort.cohort_id,
-                    year_id=year_obj.year_id
-                ).first()
-                
-                if existing:
-                    # Update existing record
-                    existing.eligible_population = eligible
-                    existing.vaccinated_count = vaccinated
-                    existing.coverage_percentage = coverage_percentage
-                else:
-                    # Create new record only if we have data to save
-                    if eligible is not None or vaccinated is not None:
-                        new_record = CoverageModel(
-                            area_code=area_code,
-                            vaccine_id=vaccine.vaccine_id,
-                            cohort_id=cohort.cohort_id,
-                            year_id=year_obj.year_id,
-                            eligible_population=eligible,
-                            vaccinated_count=vaccinated,
-                            coverage_percentage=coverage_percentage
-                        )
-                        session.add(new_record)
-                success_count += 1
+            # Delegate all business logic to CRUD service
+            count = crud.update_row_vaccines(
+                area_code=area_code,
+                cohort_name=cohort_name,
+                year=year_val,
+                vaccine_updates=updates
+            )
             
-            # Commit all changes at once
-            session.commit()
-            # Clear session cache to ensure fresh data on next query
-            session.expire_all()
-            return jsonify({'message': f'Updated {success_count} records'})
-
+            return jsonify({'message': f'Updated {count} records'})
+            
+        except ValueError as e:
+            # Application errors (invalid data)
+            logger.log_action("error", "row_update", str(e))
+            return jsonify({'error': str(e)}), 400
         except Exception as e:
+            # Unexpected errors
+            logger.log_action("error", "row_update", str(e))
             return jsonify({'error': str(e)}), 500
 
     elif request.method == 'DELETE':
@@ -710,8 +614,9 @@ def manage_row():
         year_val = data.get('year', 2024)
         cohort_name = data.get('cohort_name', '24 months')
         
-        # Delete ALL coverage for this area/cohort/year
-        # We need to find them first
+        logger.log_action("delete", "row", f"area={area_code}")
+        
+        # Get References
         year_obj = session.query(FinancialYear).filter_by(year_start=year_val).first()
         cohort = session.query(AgeCohort).filter_by(cohort_name=cohort_name).first()
         
@@ -742,15 +647,28 @@ def manage_row():
         return jsonify({'message': f'Deleted {count} records'})
 @app.route('/api/tables/table1', methods=['POST'])
 def get_table1():
-    """Get Table 1: UK by country, 12 months cohort."""
+    """Get Table 1: UK by country, with optional server-side filtering."""
     data = request.json
     cohort_name = data.get('cohort_name', '12 months')
     year = data.get('year', 2024)
+    filters = data.get('filters', {})  # NEW: Accept filter parameters
 
-    logger.log_action("query", "table1_uk_by_country", f"cohort={cohort_name}, year={year}")
+    logger.log_action("query", "table1_uk_by_country", f"cohort={cohort_name}, year={year}, filters={len(filters)} columns")
 
     try:
         result = table_builder.get_table1_uk_by_country(cohort_name=cohort_name, year=year)
+        
+        # Apply server-side filtering using analyzer module
+        if filters and result.get('data'):
+            filtered_data = analyzer.filter_table_data(
+                table_data=result['data'],
+                filters=filters
+            )
+            result['data'] = filtered_data
+            result['filtered'] = True
+            result['filter_count'] = len(filters)
+            logger.log_action("filter", "table1_backend_filter", f"Filtered {len(result['data'])} rows")
+        
         return jsonify(result)
     except Exception as e:
         import traceback

@@ -405,3 +405,143 @@ class VaccinationVisualizer:
         plt.close()
         
         return filepath
+
+    # High-level orchestration (for frontend chart generation)
+    def generate_table_comparison_chart(
+        self,
+        table_type: str,
+        cohort_name: str,
+        year: int,
+        selected_areas: List[str],
+        selected_vaccines: List[str],
+        table_builder,  # Dependency injection
+        analyzer  # Dependency injection  
+    ) -> Path:
+        """
+        Generate comparison chart from table data.
+        
+        This method orchestrates the complete workflow:
+        - Retrieves table data via table_builder
+        - Filters to selected areas using analyzer
+        - Validates vaccine data
+        - Selects appropriate chart type based on data size
+        - Generates and returns chart
+        
+        Args:
+            table_type: Type of table ('table1' or 'table4')
+            cohort_name: Age cohort (e.g., '12 months', '24 months')
+            year: Financial year (e.g., 2024)
+            selected_areas: List of geographic area names to include
+            selected_vaccines: List of vaccine column names to visualize
+            table_builder: TableBuilder instance for data retrieval
+            analyzer: VaccinationAnalyzer instance for filtering
+            
+        Returns:
+            Path to generated chart file
+            
+        Raises:
+            ValueError: If invalid table type, no data, or invalid vaccines
+            
+        Example:
+            >>> chart_path = visualizer.generate_table_comparison_chart(
+            ...     table_type='table1',
+            ...     cohort_name='12 months',
+            ...     year=2024,
+            ...     selected_areas=['England', 'Wales'],
+            ...     selected_vaccines=['coverage_at_12_months_dtap_ipv_hib'],
+            ...     table_builder=table_builder,
+            ...     analyzer=analyzer
+            ... )
+        """
+        # Get table data
+        if table_type == 'table1':
+            table_data = table_builder.get_table1_uk_by_country(cohort_name=cohort_name, year=year)
+            rows = table_data.get('data', [])
+        elif table_type == 'table4':
+            rows = table_builder.get_utla_table(cohort_name=cohort_name, year=year)
+        else:
+            raise ValueError(f"Unsupported table type: {table_type}")
+        
+        if not rows:
+            raise ValueError("No table data found")
+        
+        # Filter to selected areas using analyzer
+        if selected_areas:
+            # Build filter dict with both possible column names
+            filters = {}
+            # Check which column exists in the data
+            if rows and 'geographic_area' in rows[0]:
+                filters['geographic_area'] = selected_areas
+            if rows and 'local_authority' in rows[0]:
+                filters['local_authority'] = selected_areas
+            
+            if filters:
+                rows = analyzer.filter_table_data(rows, filters)
+        
+        if not rows:
+            raise ValueError("No data for selected areas")
+        
+        if not selected_vaccines:
+            raise ValueError("Please select at least one vaccine to visualize")
+        
+        # Clean data (replace None with 0 to prevent math errors)
+        rows = self._clean_vaccine_data(rows, selected_vaccines)
+        
+        # Validate vaccines have data
+        vaccines_with_data = self._filter_vaccines_with_data(rows, selected_vaccines)
+        
+        if not vaccines_with_data:
+            raise ValueError("No vaccine data available to visualize")
+        
+        # Choose appropriate chart type based on data size
+        if len(rows) > 10:
+            # Use average comparison for large datasets
+            return self.plot_column_averages(
+                rows,
+                selected_vaccines=vaccines_with_data,
+                title=f"Average Vaccine Coverage (All Areas) - {cohort_name}",
+                filename=f"table_comparison_{table_type}_{cohort_name.replace(' ', '_')}.png"
+            )
+        else:
+            # Use detailed comparison for small datasets (filtered areas or Table 1)
+            return self.plot_table_comparison(
+                rows,
+                selected_vaccines=vaccines_with_data,
+                title=f"Vaccine Coverage Comparison - {cohort_name}",
+                filename=f"table_comparison_{table_type}_{cohort_name.replace(' ', '_')}.png"
+            )
+
+    def _clean_vaccine_data(self, rows: List[Dict[str, Any]], vaccines: List[str]) -> List[Dict[str, Any]]:
+        """
+        Replace None values with 0 to prevent math errors.
+        
+        Args:
+            rows: List of table rows
+            vaccines: List of vaccine column names
+            
+        Returns:
+            Cleaned rows with None replaced by 0
+        """
+        for row in rows:
+            for vaccine_col in vaccines:
+                if row.get(vaccine_col) is None:
+                    row[vaccine_col] = 0
+        return rows
+
+    def _filter_vaccines_with_data(self, rows: List[Dict[str, Any]], vaccines: List[str]) -> List[str]:
+        """
+        Return only vaccines that have actual data (not all zeros).
+        
+        Args:
+            rows: List of table rows
+            vaccines: List of vaccine column names
+            
+        Returns:
+            List of vaccine column names that have non-zero data
+        """
+        vaccines_with_data = []
+        for vaccine_col in vaccines:
+            has_data = any(row.get(vaccine_col, 0) > 0 for row in rows)
+            if has_data:
+                vaccines_with_data.append(vaccine_col)
+        return vaccines_with_data

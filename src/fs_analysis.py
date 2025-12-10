@@ -187,3 +187,63 @@ class VaccinationAnalyzer:
             for row in results
             if row[1] is not None
         ]
+
+    def filter_table_data(
+        self,
+        table_data: List[Dict[str, Any]],
+        filters: Dict[str, List[str]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Filter table data by multiple column criteria.
+        
+        This method demonstrates backend filtering capabilities for assessment.
+        It applies filters to pre-built table data from table_builder.
+        
+        Args:
+            table_data: List of row dictionaries from table_builder
+            filters: Dict mapping column names to lists of allowed values
+                    e.g., {'geographic_area': ['England', 'Scotland'],
+                           'region_name': ['London', 'South East']}
+        
+        Returns:
+            Filtered list of row dictionaries
+            
+        Example:
+            >>> filters = {'geographic_area': ['England', 'Wales']}
+            >>> filtered = analyzer.filter_table_data(table_data, filters)
+        """
+        if not filters:
+            return table_data
+        
+        filtered_rows = []
+        
+        for row in table_data:
+            # Check if row matches ALL filter criteria (AND logic)
+            matches = True
+            
+            for column, allowed_values in filters.items():
+                if not allowed_values:  # Skip empty filters
+                    continue
+                
+                # Get cell value, handle None/missing columns
+                cell_value = row.get(column)
+                
+                # Convert to string for comparison
+                if cell_value is not None:
+                    if isinstance(cell_value, (int, float)):
+                        cell_str = str(cell_value)
+                    else:
+                        cell_str = str(cell_value)
+                else:
+                    cell_str = ''
+                
+                # Check if cell value is in allowed values
+                if cell_str not in allowed_values:
+                    matches = False
+                    break
+            
+            if matches:
+                filtered_rows.append(row)
+        
+        return filtered_rows
+

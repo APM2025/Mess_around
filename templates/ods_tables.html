@@ -361,6 +361,8 @@
             <button onclick="loadTable()">Load Table</button>
             <button class="btn-secondary" onclick="exportTable()">Export CSV</button>
             <button class="btn-secondary" onclick="clearFilters()">Clear Filters</button>
+            <button class="btn-warning" onclick="reloadOriginalData()"
+                title="Reset database to original 2024-25 coverage data figures">🔄 Reset to 2024-25 Data</button>
         </div>
 
         <div id="table-container">
@@ -847,20 +849,19 @@
         // Store current filter state
         let currentFilters = {};
 
-        function filterColumn(input, columnName) {
+        async function filterColumn(input, columnName) {
             if (!currentTableData || !currentTableData.data) return;
 
             // Collect all current filters (both text inputs and multi-selects)
-            currentFilters = {};
+            const filters = {};
 
             // Text inputs
             document.querySelectorAll('th input[data-column]').forEach(inp => {
                 const col = inp.getAttribute('data-column');
                 if (col && inp.value.trim()) {
-                    currentFilters[col] = {
-                        type: 'text',
-                        value: inp.value.toLowerCase().trim()
-                    };
+                    // For text inputs, we'll do client-side filtering for now
+                    // (Could extend backend to support partial matches)
+                    filters[col] = [inp.value.trim()];
                 }
             });
 
@@ -870,26 +871,69 @@
                 const checkedBoxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
                 const selectedValues = Array.from(checkedBoxes).map(cb => cb.value);
                 if (col && selectedValues.length > 0) {
-                    currentFilters[col] = {
-                        type: 'multiselect',
-                        values: selectedValues
-                    };
+                    filters[col] = selectedValues;
                 }
             });
 
-            // Apply all filters
+            // Store filters for state restoration
+            currentFilters = filters;
+
+            // Call backend to filter data using fs_analysis module
+            try {
+                const tableType = document.getElementById('table-select').value;
+                const cohort = document.getElementById('cohort-select').value;
+                const year = parseInt(document.getElementById('year-select').value);
+
+                let endpoint = '';
+                if (tableType === 'table1') {
+                    endpoint = '/api/tables/table1';
+                } else if (tableType === 'table4') {
+                    endpoint = '/api/tables/utla';
+                }
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cohort_name: cohort,
+                        year: year,
+                        filters: filters  // Send filters to backend
+                    })
+                });
+
+                const result = await response.json();
+                currentTableData = result;
+                filteredData = result.data;
+
+                // Re-render table with backend-filtered data
+                renderTable(currentTableData);
+                restoreFilters();
+
+                // Log backend filtering usage for debugging
+                console.log(`[BACKEND FILTER] Applied ${Object.keys(filters).length} filters, returned ${filteredData.length} rows`);
+
+            } catch (error) {
+                console.error('Backend filtering error:', error);
+                // Fallback to client-side if backend fails
+                applyClientSideFiltering(filters);
+            }
+        }
+
+        function applyClientSideFiltering(filters) {
+            // Fallback client-side filtering in case backend fails
             filteredData = currentTableData.data.filter(row => {
-                for (const [col, filter] of Object.entries(currentFilters)) {
+                for (const [col, filterValues] of Object.entries(filters)) {
                     const cellValue = row[col];
                     const cellStr = cellValue !== null && cellValue !== undefined ?
                         (typeof cellValue === 'number' ? cellValue.toFixed(1) : String(cellValue)) : '';
 
-                    if (filter.type === 'text') {
-                        if (!cellStr.toLowerCase().includes(filter.value)) {
+                    // For text inputs, check if cellStr includes the filter value (case-insensitive)
+                    if (filterValues.length === 1 && document.querySelector(`th input[data-column="${col}"]`)) {
+                        if (!cellStr.toLowerCase().includes(filterValues[0].toLowerCase())) {
                             return false;
                         }
-                    } else if (filter.type === 'multiselect') {
-                        if (!filter.values.includes(cellStr)) {
+                    } else { // For multiselect dropdowns
+                        if (!filterValues.includes(cellStr)) {
                             return false;
                         }
                     }
@@ -897,7 +941,6 @@
                 return true;
             });
 
-            // Re-render table and restore filter state
             renderTable(currentTableData);
             restoreFilters();
         }
@@ -906,18 +949,18 @@
             // Restore text input values
             document.querySelectorAll('th input[data-column]').forEach(inp => {
                 const col = inp.getAttribute('data-column');
-                if (currentFilters[col] && currentFilters[col].type === 'text') {
-                    inp.value = currentFilters[col].value;
+                if (currentFilters[col] && Array.isArray(currentFilters[col]) && currentFilters[col].length === 1) {
+                    inp.value = currentFilters[col][0];
                 }
             });
 
             // Restore checkbox selections in dropdowns
             document.querySelectorAll('.filter-dropdown[data-column]').forEach(dropdown => {
                 const col = dropdown.getAttribute('data-column');
-                if (currentFilters[col] && currentFilters[col].type === 'multiselect') {
+                if (currentFilters[col] && Array.isArray(currentFilters[col])) {
                     const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(cb => {
-                        cb.checked = currentFilters[col].values.includes(cb.value);
+                        cb.checked = currentFilters[col].includes(cb.value);
                     });
                     updateDropdownButtonText(col);
                 }
@@ -998,7 +1041,7 @@
             }
 
             const tableType = document.getElementById('table-select').value;
-            console.log(`[VIZ] Table type: ${tableType}`);
+            console.log(`[VIZ] Table type: ${tableType} `);
 
             // Show visualization for table1 and table4
             if (tableType !== 'table1' && tableType !== 'table4') {
@@ -1037,14 +1080,14 @@
                 selectedAreas = filteredData.map(row =>
                     row.geographic_area || row.local_authority || 'Unknown'
                 );
-                console.log(`[VIZ] Table 1 - Selected areas: ${selectedAreas.join(', ')}`);
+                console.log(`[VIZ] Table 1 - Selected areas: ${selectedAreas.join(', ')} `);
             }
 
             // Get all coverage columns from the table
             const firstRow = filteredData[0];
             const selectedVaccines = Object.keys(firstRow).filter(col => col.startsWith('coverage_at_'));
 
-            console.log(`[VIZ] Found ${selectedVaccines.length} coverage columns:`, selectedVaccines);
+            console.log(`[VIZ] Found ${selectedVaccines.length} coverage columns: `, selectedVaccines);
 
             if (selectedVaccines.length === 0) {
                 console.error("[VIZ] No vaccine coverage columns found!");
@@ -1071,12 +1114,12 @@
                     body: JSON.stringify(requestData)
                 });
 
-                console.log(`[VIZ] Response status: ${response.status}`);
+                console.log(`[VIZ] Response status: ${response.status} `);
 
                 if (!response.ok) {
                     const text = await response.text();
-                    console.error(`[VIZ] Server error:`, text);
-                    throw new Error(`Server Error (${response.status}): ${text.substring(0, 100)}...`);
+                    console.error(`[VIZ] Server error: `, text);
+                    throw new Error(`Server Error(${response.status}): ${text.substring(0, 100)}...`);
                 }
 
                 const result = await response.json();
@@ -1095,8 +1138,8 @@
             } catch (error) {
                 console.error("[VIZ] Exception:", error);
                 container.innerHTML = `<div class="loading" style="color: red;">
-                    Error generating chart.<br>
-                    <small>${error.message}</small>
+            Error generating chart.<br>
+            <small>${error.message}</small>
                 </div>`;
             }
         }
@@ -1274,17 +1317,17 @@
                 card.style.backgroundColor = "#fff";
 
                 card.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 8px; color: #084298;">${displayName}</div>
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex: 1;">
-                            <label style="font-size: 0.8em; display: block;">Vaccinated</label>
-                            <input type="number" class="row-vac-input" data-vaccine="${vCode}" value="${vacVal !== null ? vacVal : ''}" style="width: 100%; border: 1px solid #ccc; padding: 4px;" onchange="updateRowCoverage(this)">
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="font-size: 0.8em; display: block;">Coverage %</label>
-                            <input type="number" class="row-cov-input" data-vaccine="${vCode}" value="${covVal !== null ? covVal : ''}" step="0.1" style="width: 100%; border: 1px solid #ccc; padding: 4px; background: #f9f9f9;" readonly>
-                        </div>
-                    </div>
+            <div style="font-weight: bold; margin-bottom: 8px; color: #084298;">${displayName}</div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8em; display: block;">Vaccinated</label>
+                    <input type="number" class="row-vac-input" data-vaccine="${vCode}" value="${vacVal !== null ? vacVal : ''}" style="width: 100%; border: 1px solid #ccc; padding: 4px;" onchange="updateRowCoverage(this)">
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8em; display: block;">Coverage %</label>
+                    <input type="number" class="row-cov-input" data-vaccine="${vCode}" value="${covVal !== null ? covVal : ''}" step="0.1" style="width: 100%; border: 1px solid #ccc; padding: 4px; background: #f9f9f9;" readonly>
+                </div>
+            </div>
                 `;
                 container.appendChild(card);
             });
@@ -1421,6 +1464,41 @@
         function toggleSection(sectionId) {
             const section = document.getElementById(sectionId);
             section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function reloadOriginalData() {
+            // Confirm action
+            if (!confirm('⚠️ This will reset the database to the original 2024-25 coverage data figures and undo any edits you made.\n\nAre you sure you want to continue?')) {
+                return;
+            }
+
+            try {
+                // Show loading message
+                const tableContainer = document.getElementById('table-container');
+                tableContainer.innerHTML = '<div class="loading">🔄 Resetting database to 2024-25 coverage data... This may take a moment...</div>';
+
+                // Call reload endpoint
+                const response = await fetch('/api/reload-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('✅ ' + result.message + '\n\nThe page will now reload.');
+                    // Reload current table to show fresh data
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + (result.error || 'Failed to reload data'));
+                    loadTable(); // Reload current view
+                }
+
+            } catch (error) {
+                console.error('Reload error:', error);
+                alert('❌ Error reloading data: ' + error.message);
+                loadTable(); // Try to reload current view
+            }
         }
     </script>
 </body>
