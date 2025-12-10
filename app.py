@@ -19,14 +19,14 @@ import base64
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-from src.database import get_session
-from src.fs_analysis import VaccinationAnalyzer
-from src.visualization import VaccinationVisualizer
-from src.crud import VaccinationCRUD
-from src.export import DataExporter
-from src.user_log import UserActivityLogger
-from src.table_builder import TableBuilder
-from src.models import GeographicArea, Vaccine, AgeCohort, FinancialYear, LocalAuthorityCoverage, NationalCoverage
+from src.layer1_database.database import get_session
+from src.layer2_business_logic.fs_analysis import VaccinationAnalyzer
+from src.layer3_presentation.visualization import VaccinationVisualizer
+from src.layer2_business_logic.crud import VaccinationCRUD
+from src.layer2_business_logic.export import DataExporter
+from src.layer2_business_logic.user_log import UserActivityLogger
+from src.layer2_business_logic.table_builder import TableBuilder
+from src.layer1_database.models import GeographicArea, Vaccine, AgeCohort, FinancialYear, LocalAuthorityCoverage, NationalCoverage
 
 # Initialize Flask app
 app = Flask(__name__)

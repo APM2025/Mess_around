@@ -15,15 +15,15 @@ from pathlib import Path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-from src.database import get_session
-from src.models import (
+from src.layer1_database.database import get_session
+from src.layer1_database.models import (
     GeographicArea, Vaccine, AgeCohort, FinancialYear,
     LocalAuthorityCoverage, EnglandTimeSeries, NationalCoverage,
     RegionalTimeSeries, SpecialProgram
 )
 
 # Import loaders
-from src.load_reference_data import (
+from src.layer0_data_ingestion.load_reference_data import (
     load_geographic_areas,
     load_vaccines,
     load_age_cohorts,

@@ -1,63 +1,22 @@
 """
-Database Version 2 - Source Code
+UK Vaccination Coverage Dashboard - Source Code
 
-Clean, refactored database code with clear organization.
+4-Layer Architecture:
+- Layer 0: Data Ingestion & Cleaning
+- Layer 1: Database Layer (models, session management)
+- Layer 2: Business Logic (analysis, CRUD, export)
+- Layer 3: Presentation (visualization, web interface)
 
-Core modules:
-- models: SQLAlchemy ORM models
-- database: Session management
-- csv_cleaner: CSV cleaning utilities
-- vaccine_matcher: Vaccine name matching
-- ods_to_csv: ODS to CSV conversion
-
-Data loaders:
-- load_reference_data: Load dimension tables
-- load_national_coverage: Load national coverage
-- load_local_authority: Load local authority data
-- load_england_time_series: Load England historical data
-- load_regional_time_series: Load regional historical data
-- load_special_programs: Load HepB/BCG programs
+See ARCHITECTURE.md for detailed layer descriptions and dependency rules.
 """
 
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 __author__ = "Amyna"
 
-# Core exports
-from .models import (
-    Base,
-    GeographicArea,
-    Vaccine,
-    AgeCohort,
-    FinancialYear,
-    NationalCoverage,
-    LocalAuthorityCoverage,
-    EnglandTimeSeries,
-    RegionalTimeSeries,
-    SpecialProgram,
-    init_database
-)
-
-from .database import (
-    create_test_session,
-    create_production_session,
-    get_session
-)
-
+# Expose layer packages
 __all__ = [
-    # Models
-    "Base",
-    "GeographicArea",
-    "Vaccine",
-    "AgeCohort",
-    "FinancialYear",
-    "NationalCoverage",
-    "LocalAuthorityCoverage",
-    "EnglandTimeSeries",
-    "RegionalTimeSeries",
-    "SpecialProgram",
-    "init_database",
-    # Database
-    "create_test_session",
-    "create_production_session",
-    "get_session",
+    "layer0_data_ingestion",
+    "layer1_database",
+    "layer2_business_logic",
+    "layer3_presentation",
 ]
