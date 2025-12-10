@@ -669,3 +669,100 @@ class VaccinationCRUD:
             return self.delete_coverage_record(existing.coverage_id)
         
         return False
+
+    def get_all_areas_as_dicts(self) -> List[Dict[str, Any]]:
+        """
+        Get all geographic areas as dictionaries for API responses.
+        
+        Returns:
+            List of dictionaries with area information
+        """
+        areas = self.session.query(GeographicArea).order_by(GeographicArea.area_name).all()
+        return [
+            {
+                'code': area.area_code,
+                'name': area.area_name,
+                'type': area.area_type
+            }
+            for area in areas
+        ]
+
+    def get_areas_by_type_as_dicts(self, area_type: str) -> List[Dict[str, str]]:
+        """
+        Get geographic areas filtered by type, formatted for API responses.
+        
+        Args:
+            area_type: Type to filter by ('country', 'region', 'utla')
+            
+        Returns:
+            List of dictionaries with code and name
+        """
+        areas = self.session.query(GeographicArea).filter_by(
+            area_type=area_type
+        ).order_by(GeographicArea.area_name).all()
+        
+        return [
+            {
+                'code': area.area_code,
+                'name': area.area_name
+            }
+            for area in areas
+        ]
+
+    def delete_row_by_codes(
+        self,
+        area_code: str,
+        cohort_name: str,
+        year: int
+    ) -> int:
+        """
+        Delete all vaccine records for a specific area/cohort/year combination.
+        
+        This method handles the complete workflow for deleting a row:
+        - Resolves references (year, cohort, area)
+        - Determines correct table (National vs LocalAuthority)
+        - Deletes all records matching the criteria
+        - Commits transaction and refreshes cache
+        
+        Args:
+            area_code: Geographic area code
+            cohort_name: Age cohort name (e.g., '24 months')
+            year: Financial year start (e.g., 2024)
+            
+        Returns:
+            Number of records deleted
+            
+        Raises:
+            ValueError: If reference data (year, cohort, area) is invalid
+        """
+        # Resolve references
+        year_obj = self.session.query(FinancialYear).filter_by(year_start=year).first()
+        cohort = self.session.query(AgeCohort).filter_by(cohort_name=cohort_name).first()
+        area = self.session.query(GeographicArea).filter_by(area_code=area_code).first()
+        
+        if not all([year_obj, cohort, area]):
+            raise ValueError("Invalid reference data: year, cohort, or area not found")
+        
+        # Determine which table to use based on area type
+        is_national = area.area_type in ['country', 'uk']
+        CoverageModel = NationalCoverage if is_national else LocalAuthorityCoverage
+        
+        # Find all records for this row
+        records = self.session.query(CoverageModel).filter_by(
+            area_code=area_code,
+            cohort_id=cohort.cohort_id,
+            year_id=year_obj.year_id
+        ).all()
+        
+        # Delete all records
+        count = len(records)
+        for record in records:
+            self.session.delete(record)
+        
+        # Commit transaction
+        self.session.commit()
+        
+        # Clear session cache to ensure fresh data on next query
+        self.session.expire_all()
+        
+        return count

@@ -609,3 +609,57 @@
 [2025-12-10 10:25:20] CREATE: vaccine | code=TEST999
 [2025-12-10 10:25:20] DELETE: vaccine | code=TEST999
 [2025-12-10 10:25:20] UPDATE: vaccine | code=NONEXISTENT999
+[2025-12-10 11:44:10] VIEW: dashboard | ods_tables
+[2025-12-10 11:44:11] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:44:12] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:44:21] QUERY: table1_uk_by_country | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 11:44:21] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:48:58] VIEW: dashboard | ods_tables
+[2025-12-10 11:49:00] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:49:00] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:50:00] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:50:00] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:51:04] VIEW: dashboard | ods_tables
+[2025-12-10 11:51:04] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:51:04] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:51:09] VIEW: dashboard | charts_view
+[2025-12-10 11:51:09] QUERY: get_vaccines | api_call
+[2025-12-10 11:51:14] VIEW: dashboard | ods_tables
+[2025-12-10 11:51:14] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:51:14] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:51:16] VIEW: dashboard | table_view
+[2025-12-10 11:51:16] QUERY: utla_table | cohort=24 months, year=2024, filters=0 columns
+[2025-12-10 11:51:21] VIEW: dashboard | activity_logs
+[2025-12-10 11:51:32] VIEW: dashboard | ods_tables
+[2025-12-10 11:51:32] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:51:32] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:52:56] VIEW: dashboard | ods_tables
+[2025-12-10 11:52:56] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:52:57] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:52:58] VIEW: dashboard | activity_logs
+[2025-12-10 11:52:59] VIEW: dashboard | ods_tables
+[2025-12-10 11:53:00] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:53:00] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:53:50] VIEW: dashboard | ods_tables
+[2025-12-10 11:53:50] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:53:50] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:53:51] VIEW: dashboard | activity_logs
+[2025-12-10 11:54:00] VIEW: dashboard | ods_tables
+[2025-12-10 11:54:00] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:54:00] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:54:45] VIEW: dashboard | activity_logs
+[2025-12-10 11:54:48] VIEW: dashboard | ods_tables
+[2025-12-10 11:54:48] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:54:49] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:54:50] VIEW: dashboard | activity_logs
+[2025-12-10 11:54:51] VIEW: dashboard | ods_tables
+[2025-12-10 11:54:51] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:54:52] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:55:04] VIEW: dashboard | activity_logs
+[2025-12-10 11:55:05] VIEW: dashboard | ods_tables
+[2025-12-10 11:55:05] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:55:05] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13
+[2025-12-10 11:55:06] VIEW: dashboard | activity_logs
+[2025-12-10 11:55:08] VIEW: dashboard | ods_tables
+[2025-12-10 11:55:08] QUERY: table1_uk_by_country | cohort=12 months, year=2024, filters=0 columns
+[2025-12-10 11:55:09] VISUALIZE: table_comparison | table=table1, areas=5, vaccines=13

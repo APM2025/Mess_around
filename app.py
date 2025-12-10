@@ -97,12 +97,19 @@ def charts_dashboard():
     logger.log_action("view", "dashboard", "charts_view")
     return render_template('dashboard.html')
 
+@app.route('/logs')
+def activity_logs():
+    """Activity logs dashboard."""
+    logger.log_action("view", "dashboard", "activity_logs")
+    return render_template('activity_logs.html')
+
 
 @app.route('/api/vaccines')
 def get_vaccines():
     """Get list of all vaccines."""
     logger.log_action("query", "get_vaccines", "api_call")
     vaccines = crud.get_all_vaccines()
+    # Return list of dicts directly
     return jsonify([
         {'vaccine_code': v.vaccine_code, 'vaccine_name': v.vaccine_name}
         for v in vaccines
@@ -301,12 +308,9 @@ def visualize_compare_areas():
 @app.route('/api/areas', methods=['GET'])
 def get_areas():
     """Get all available areas for selection."""
-    areas = session.query(GeographicArea).filter_by(area_type='utla').order_by(GeographicArea.area_name).all()
-
-    return jsonify([{
-        'code': area.area_code,
-        'name': area.area_name
-    } for area in areas])
+    # Delegate to CRUD layer instead of direct database query
+    areas = crud.get_areas_by_type_as_dicts('utla')
+    return jsonify(areas)
 
 
 @app.route('/api/visualize/distribution', methods=['POST'])
@@ -616,35 +620,16 @@ def manage_row():
         
         logger.log_action("delete", "row", f"area={area_code}")
         
-        # Get References
-        year_obj = session.query(FinancialYear).filter_by(year_start=year_val).first()
-        cohort = session.query(AgeCohort).filter_by(cohort_name=cohort_name).first()
-        
-        if not all([year_obj, cohort, area_code]):
-            return jsonify({'error': 'Invalid data'}), 400
-        
-        # Determine which table to use based on area type
-        area = session.query(GeographicArea).filter_by(area_code=area_code).first()
-        if not area:
-            return jsonify({'error': 'Area not found'}), 404
-        
-        is_national = area.area_type in ['country', 'uk']
-        CoverageModel = NationalCoverage if is_national else LocalAuthorityCoverage
-            
-        records = session.query(CoverageModel).filter_by(
-            area_code=area_code,
-            cohort_id=cohort.cohort_id,
-            year_id=year_obj.year_id
-        ).all()
-        
-        count = len(records)
-        for rec in records:
-            session.delete(rec)
-        session.commit()
-        
-        # Clear session cache to ensure fresh data on next query
-        session.expire_all()
-        return jsonify({'message': f'Deleted {count} records'})
+        try:
+            # Delegate all business logic to CRUD layer
+            count = crud.delete_row_by_codes(
+                area_code=area_code,
+                cohort_name=cohort_name,
+                year=year_val
+            )
+            return jsonify({'message': f'Deleted {count} records'})
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
 @app.route('/api/tables/table1', methods=['POST'])
 def get_table1():
     """Get Table 1: UK by country, with optional server-side filtering."""
@@ -703,17 +688,12 @@ def get_bcg_table():
     return jsonify(result)
 
 
-@app.route('/api/areas', methods=['GET'])
+@app.route('/api/all-areas', methods=['GET'])
 def get_all_areas():
     """Get all geographic areas for CRUD dropdown."""
-    areas = session.query(GeographicArea).order_by(GeographicArea.area_name).all()
-    return jsonify([
-        {
-            'code': a.area_code,
-            'name': a.area_name,
-            'type': a.area_type
-        } for a in areas
-    ])
+    # Delegate to CRUD layer instead of direct database query
+    areas = crud.get_all_areas_as_dicts()
+    return jsonify(areas)
 
 
 if __name__ == '__main__':

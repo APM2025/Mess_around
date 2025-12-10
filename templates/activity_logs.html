@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Activity Logs - Vaccination Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: white;
+            color: #000;
+            font-size: 11pt;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+        .nav-bar {
+            background: #f8f8f8;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-bar a {
+            text-decoration: none;
+        }
+
+        button {
+            padding: 6px 16px;
+            font-size: 10pt;
+            border: 1px solid #005eb8;
+            background: #005eb8;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background: #004a94;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #005eb8;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f4f5;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f0f8ff;
+            border: 1px solid #4682b4;
+            border-radius: 4px;
+            padding: 15px;
+        }
+
+        .stat-label {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #005eb8;
+        }
+
+        .controls {
+            background: #f8f8f8;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .control-group label {
+            display: inline-block;
+            margin-right: 8px;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        .control-group select {
+            padding: 5px 10px;
+            font-size: 10pt;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .logs-container {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #005eb8;
+        }
+
+        .logs-header h2 {
+            font-size: 13pt;
+            color: #000;
+        }
+
+        .log-count {
+            background: #f0f4f5;
+            padding: 6px 12px;
+            border-radius: 3px;
+            color: #333;
+            font-size: 9pt;
+            font-weight: bold;
+        }
+
+        .log-entry {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid #005eb8;
+            background: #f9f9f9;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+        }
+
+        .log-entry:hover {
+            background: #f0f4f5;
+        }
+
+        .log-entry.query {
+            border-left-color: #005eb8;
+        }
+
+        .log-entry.create {
+            border-left-color: #28a745;
+        }
+
+        .log-entry.update {
+            border-left-color: #ffc107;
+        }
+
+        .log-entry.delete {
+            border-left-color: #dc3545;
+        }
+
+        .log-entry.export {
+            border-left-color: #6f42c1;
+        }
+
+        .log-entry.visualize {
+            border-left-color: #17a2b8;
+        }
+
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .log-timestamp {
+            color: #005eb8;
+            font-weight: bold;
+        }
+
+        .log-type {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 8pt;
+            font-weight: bold;
+            margin-left: 8px;
+            color: white;
+        }
+
+        .log-type.QUERY {
+            background: #005eb8;
+        }
+
+        .log-type.CREATE {
+            background: #28a745;
+        }
+
+        .log-type.UPDATE {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .log-type.DELETE {
+            background: #dc3545;
+        }
+
+        .log-type.EXPORT {
+            background: #6f42c1;
+        }
+
+        .log-type.VISUALIZE {
+            background: #17a2b8;
+        }
+
+        .log-type.VIEW {
+            background: #6c757d;
+        }
+
+        .log-type.ERROR {
+            background: #dc3545;
+        }
+
+        .log-type.ADMIN {
+            background: #6610f2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            font-size: 12pt;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .auto-refresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #28a745;
+            font-size: 9pt;
+        }
+
+        .auto-refresh-indicator.active::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-group {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="page-title">User Activity Logs</h1>
+
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <a href="/">
+                <button class="btn-secondary">📋 ODS Tables</button>
+            </a>
+            <a href="/logs">
+                <button style="background: #005eb8; color: white;">📝 Activity Logs</button>
+            </a>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Actions</div>
+                <div class="stat-value" id="stat-total">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Queries</div>
+                <div class="stat-value" id="stat-query">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Visualizations</div>
+                <div class="stat-value" id="stat-visualize">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Exports</div>
+                <div class="stat-value" id="stat-export">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Updates</div>
+                <div class="stat-value" id="stat-update">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Creates</div>
+                <div class="stat-value" id="stat-create">-</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="controls-row">
+                <div class="control-group">
+                    <label for="log-limit">Show:</label>
+                    <select id="log-limit">
+                        <option value="10">10 logs</option>
+                        <option value="20" selected>20 logs</option>
+                        <option value="50">50 logs</option>
+                        <option value="100">100 logs</option>
+                        <option value="200">200 logs</option>
+                    </select>
+                </div>
+
+                <button onclick="loadLogs()">🔄 Refresh</button>
+                <button class="btn-secondary" onclick="toggleAutoRefresh()">
+                    <span id="auto-refresh-text">⏸️ Auto-Refresh: OFF</span>
+                </button>
+
+                <div class="auto-refresh-indicator" id="refresh-indicator">
+                    <span id="refresh-status"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Display -->
+        <div class="logs-container">
+            <div class="logs-header">
+                <h2>Recent Activity</h2>
+                <div class="log-count" id="log-count">Loading...</div>
+            </div>
+
+            <div id="logs-display">
+                <div class="loading">
+                    Loading activity logs...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+        let autoRefreshEnabled = false;
+
+        // Load logs on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            loadLogs();
+            loadSummary();
+        });
+
+        // Load activity logs
+        async function loadLogs() {
+            const limit = document.getElementById('log-limit').value;
+            const logsDisplay = document.getElementById('logs-display');
+
+            try {
+                const response = await fetch(`/api/logs/recent?n=${limit}`);
+                const data = await response.json();
+
+                if (data.logs && data.logs.length > 0) {
+                    displayLogs(data.logs);
+                    document.getElementById('log-count').textContent = `${data.logs.length} entries`;
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                logsDisplay.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Error Loading Logs</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display logs in the UI
+        function displayLogs(logs) {
+            const logsDisplay = document.getElementById('logs-display');
+
+            const logsHTML = logs.map(log => {
+                const typeMatch = log.match(/\[(.*?)\]\s+([A-Z]+):/);
+                const timestamp = typeMatch ? typeMatch[1] : '';
+                const type = typeMatch ? typeMatch[2] : 'VIEW';
+                const message = log.replace(/\[.*?\]\s+[A-Z]+:\s*/, '');
+
+                return `
+                    <div class="log-entry ${type.toLowerCase()}">
+                        <span class="log-timestamp">[${timestamp}]</span>
+                        <span class="log-type ${type}">${type}</span>
+                        <span class="log-message">${message}</span>
+                    </div>
+                `;
+            }).join('');
+
+            logsDisplay.innerHTML = logsHTML;
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            const logsDisplay = document.getElementById('logs-display');
+            logsDisplay.innerHTML = `
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3>No Logs Found</h3>
+                    <p>Start using the dashboard to see activity here</p>
+                </div>
+            `;
+            document.getElementById('log-count').textContent = '0 entries';
+        }
+
+        // Load summary statistics
+        async function loadSummary() {
+            try {
+                const response = await fetch('/api/logs/summary');
+                const data = await response.json();
+
+                document.getElementById('stat-total').textContent = data.total || 0;
+                document.getElementById('stat-query').textContent = data.query || 0;
+                document.getElementById('stat-visualize').textContent = data.visualize || 0;
+                document.getElementById('stat-export').textContent = data.export || 0;
+                document.getElementById('stat-update').textContent = data.update || 0;
+                document.getElementById('stat-create').textContent = data.create || 0;
+            } catch (error) {
+                console.error('Error loading summary:', error);
+            }
+        }
+
+        // Toggle auto-refresh
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+
+            if (autoRefreshEnabled) {
+                document.getElementById('auto-refresh-text').textContent = '▶️ Auto-Refresh: ON';
+                document.getElementById('refresh-indicator').classList.add('active');
+                document.getElementById('refresh-status').textContent = 'Refreshing every 5s';
+
+                // Refresh every 5 seconds
+                autoRefreshInterval = setInterval(() => {
+                    loadLogs();
+                    loadSummary();
+                }, 5000);
+            } else {
+                document.getElementById('auto-refresh-text').textContent = '⏸️ Auto-Refresh: OFF';
+                document.getElementById('refresh-indicator').classList.remove('active');
+                document.getElementById('refresh-status').textContent = '';
+
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
+        }
+
+        // Reload when limit changes
+        document.getElementById('log-limit').addEventListener('change', loadLogs);
+    </script>
+</body>
+
+</html>

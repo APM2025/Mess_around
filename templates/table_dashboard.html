@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +22,7 @@
             background: #005eb8;
             color: white;
             padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
@@ -45,7 +46,7 @@
             background: white;
             padding: 20px;
             border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
 
@@ -108,7 +109,7 @@
         .table-card {
             background: white;
             border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             overflow: hidden;
         }
@@ -202,8 +203,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .tabs {
@@ -279,6 +285,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="container">
@@ -288,6 +295,23 @@
     </div>
 
     <div class="container">
+        <!-- Navigation Bar -->
+        <div
+            style="background: white; padding: 12px; margin-bottom: 20px; border-radius: 4px; display: flex; gap: 10px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <a href="/" style="text-decoration: none;">
+                <button class="btn-secondary">📋 ODS Tables</button>
+            </a>
+            <a href="/tables" style="text-decoration: none;">
+                <button class="btn-primary">📊 Table View</button>
+            </a>
+            <a href="/charts" style="text-decoration: none;">
+                <button class="btn-secondary">📈 Charts</button>
+            </a>
+            <a href="/logs" style="text-decoration: none;">
+                <button class="btn-secondary">📝 Activity Logs</button>
+            </a>
+        </div>
+
         <div class="controls">
             <div class="control-row">
                 <div class="control-group">
@@ -409,8 +433,8 @@
             try {
                 const response = await fetch('/api/tables/utla', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({cohort_name: cohort, year: year})
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cohort_name: cohort, year: year })
                 });
 
                 const result = await response.json();
@@ -488,8 +512,8 @@
             try {
                 const response = await fetch('/api/tables/regional', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({cohort_name: cohort})
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cohort_name: cohort })
                 });
 
                 const result = await response.json();
@@ -552,8 +576,8 @@
             try {
                 const response = await fetch('/api/tables/england-summary', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({cohort_name: cohort, year: year})
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cohort_name: cohort, year: year })
                 });
 
                 const result = await response.json();
@@ -605,7 +629,7 @@
             try {
                 const response = await fetch('/api/export/csv', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         vaccine_code: 'ALL',
                         cohort_name: cohort
@@ -623,9 +647,10 @@
         }
 
         // Auto-load UTLA table on page load
-        window.onload = function() {
+        window.onload = function () {
             loadUTLATable();
         };
     </script>
 </body>
+
 </html>
