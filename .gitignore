@@ -35,6 +35,9 @@ venv.bak/
 *~
 .DS_Store
 
+# AI Sessions
+.claude/
+
 # Testing
 .pytest_cache/
 .coverage

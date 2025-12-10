@@ -15,8 +15,8 @@ import sys
 import io
 import base64
 
-# Add project to path
-project_root = Path(__file__).parent
+# Add project to path (we're in src/layer3_presentation, need to go up 2 levels)
+project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from src.layer1_database.database import get_session
@@ -28,17 +28,17 @@ from src.layer2_business_logic.user_log import UserActivityLogger
 from src.layer2_business_logic.table_builder import TableBuilder
 from src.layer1_database.models import GeographicArea, Vaccine, AgeCohort, FinancialYear, LocalAuthorityCoverage, NationalCoverage
 
-# Initialize Flask app
-app = Flask(__name__)
+# Initialize Flask app (template folder is at project root)
+app = Flask(__name__, template_folder=str(project_root / 'templates'))
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 
 # Initialize services
 session = get_session()
 analyzer = VaccinationAnalyzer(session)
-visualizer = VaccinationVisualizer(output_dir=Path("static/charts"))
+visualizer = VaccinationVisualizer(output_dir=project_root / "static/charts")
 crud = VaccinationCRUD(session)
 exporter = DataExporter()
-logger = UserActivityLogger(Path("logs/web_activity.log"))
+logger = UserActivityLogger(project_root / "logs/web_activity.log")
 table_builder = TableBuilder(session)
 
 
@@ -62,16 +62,17 @@ def reload_data():
     try:
         logger.log_action("admin", "reload_data", "starting")
         
-        # Import and call the dataloader module
-        import create_database
+        # Use the database reload service
+        from src.layer2_business_logic.database_reload import reload_all_data
         
-        # Call the main function to reload all data
-        create_database.main()
+        # Get session and reload all data
+        result = reload_all_data(session, verbose=False)
         
         logger.log_action("admin", "reload_data", "completed")
         return jsonify({
             'message': 'Database reloaded successfully',
-            'status': 'success'
+            'status': 'success',
+            'summary': result
         })
         
     except Exception as e:
@@ -85,17 +86,7 @@ def reload_data():
         }), 500
 
 
-@app.route('/tables')
-def table_dashboard():
-    """Table view dashboard."""
-    logger.log_action("view", "dashboard", "table_view")
-    return render_template('table_dashboard.html')
 
-@app.route('/charts')
-def charts_dashboard():
-    """Charts and visualizations dashboard."""
-    logger.log_action("view", "dashboard", "charts_view")
-    return render_template('dashboard.html')
 
 @app.route('/logs')
 def activity_logs():
@@ -104,205 +95,10 @@ def activity_logs():
     return render_template('activity_logs.html')
 
 
-@app.route('/api/vaccines')
-def get_vaccines():
-    """Get list of all vaccines."""
-    logger.log_action("query", "get_vaccines", "api_call")
-    vaccines = crud.get_all_vaccines()
-    # Return list of dicts directly
-    return jsonify([
-        {'vaccine_code': v.vaccine_code, 'vaccine_name': v.vaccine_name}
-        for v in vaccines
-    ])
 
 
-@app.route('/api/filter', methods=['POST'])
-def filter_data():
-    """Filter vaccination data."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    cohort_name = data.get('cohort_name', '24 months')
-
-    logger.log_action("query", "filter_data", f"vaccine={vaccine_code}, cohort={cohort_name}")
-
-    results = analyzer.filter_data(
-        vaccine_code=vaccine_code,
-        cohort_name=cohort_name
-    )
-
-    return jsonify({
-        'count': len(results),
-        'data': results[:100]  # Limit to first 100 for performance
-    })
 
 
-@app.route('/api/summary', methods=['POST'])
-def get_summary():
-    """Get summary statistics."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    cohort_name = data.get('cohort_name', '24 months')
-
-    logger.log_action("query", "get_summary", f"vaccine={vaccine_code}")
-
-    filtered_data = analyzer.filter_data(
-        vaccine_code=vaccine_code,
-        cohort_name=cohort_name
-    )
-
-    if not filtered_data:
-        return jsonify({'error': 'No data found'}), 404
-
-    summary = analyzer.get_summary(filtered_data)
-    return jsonify(summary)
-
-
-@app.route('/api/top-areas', methods=['POST'])
-def get_top_areas():
-    """Get top performing areas."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    n = data.get('n', 10)
-    cohort_name = data.get('cohort_name', '24 months')
-
-    logger.log_action("query", "get_top_areas", f"vaccine={vaccine_code}, n={n}")
-
-    top_areas = analyzer.get_top_areas(
-        vaccine_code=vaccine_code,
-        n=n,
-        cohort_name=cohort_name
-    )
-
-    return jsonify(top_areas)
-
-
-@app.route('/api/trend', methods=['POST'])
-def get_trend():
-    """Get coverage trend over time."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    cohort_name = data.get('cohort_name', '24 months')
-
-    logger.log_action("query", "get_trend", f"vaccine={vaccine_code}")
-
-    trend = analyzer.get_trend(
-        vaccine_code=vaccine_code,
-        cohort_name=cohort_name
-    )
-
-    return jsonify(trend)
-
-
-@app.route('/api/visualize/top-areas', methods=['POST'])
-def visualize_top_areas():
-    """Generate top areas chart."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    n = data.get('n', 10)
-    cohort_name = data.get('cohort_name', '24 months')
-
-    logger.log_action("visualize", "top_areas", f"vaccine={vaccine_code}")
-
-    top_areas = analyzer.get_top_areas(vaccine_code, n, cohort_name)
-
-    if not top_areas:
-        return jsonify({'error': 'No data found'}), 404
-
-    chart_path = visualizer.plot_top_areas(
-        top_areas,
-        title=f"Top {n} Areas - {vaccine_code}",
-        filename=f"top_areas_{vaccine_code}.png"
-    )
-
-    return jsonify({
-        'chart_url': f"/static/charts/{chart_path.name}"
-    })
-
-
-@app.route('/api/visualize/trend', methods=['POST'])
-def visualize_trend():
-    """Generate trend chart."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    cohort_name = data.get('cohort_name', '24 months')
-
-    logger.log_action("visualize", "trend", f"vaccine={vaccine_code}")
-
-    trend = analyzer.get_trend(vaccine_code, cohort_name)
-
-    if not trend:
-        return jsonify({'error': 'No data found'}), 404
-
-    chart_path = visualizer.plot_trend(
-        trend,
-        title=f"{vaccine_code} Coverage Trend",
-        filename=f"trend_{vaccine_code}.png"
-    )
-
-    return jsonify({
-        'chart_url': f"/static/charts/{chart_path.name}"
-    })
-
-
-@app.route('/api/visualize/summary', methods=['POST'])
-def visualize_summary():
-    """Generate summary statistics chart."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    cohort_name = data.get('cohort_name', '24 months')
-
-    logger.log_action("visualize", "summary", f"vaccine={vaccine_code}")
-
-    filtered_data = analyzer.filter_data(vaccine_code, cohort_name=cohort_name)
-
-    if not filtered_data:
-        return jsonify({'error': 'No data found'}), 404
-
-    summary = analyzer.get_summary(filtered_data)
-
-    chart_path = visualizer.plot_summary(
-        summary,
-        title=f"{vaccine_code} Summary Statistics",
-        filename=f"summary_{vaccine_code}.png"
-    )
-
-    return jsonify({
-        'chart_url': f"/static/charts/{chart_path.name}"
-    })
-
-
-@app.route('/api/visualize/compare-areas', methods=['POST'])
-def visualize_compare_areas():
-    """Generate area comparison chart."""
-    data = request.json
-    area_codes = data.get('area_codes', [])
-    cohort_name = data.get('cohort_name', '24 months')
-    year = data.get('year', 2024)
-
-    logger.log_action("visualize", "compare_areas", f"areas={len(area_codes)}, cohort={cohort_name}")
-
-    if not area_codes or len(area_codes) < 2:
-        return jsonify({'error': 'Please select at least 2 areas to compare'}), 400
-
-    # Get data for selected areas
-    table_data = table_builder.get_utla_table(cohort_name=cohort_name, year=year)
-
-    # Filter to selected areas
-    selected_data = [row for row in table_data if row['code'] in area_codes]
-
-    if not selected_data:
-        return jsonify({'error': 'No data found for selected areas'}), 404
-
-    chart_path = visualizer.plot_area_comparison(
-        selected_data,
-        cohort_name=cohort_name,
-        title=f"Vaccine Coverage Comparison - {cohort_name}",
-        filename=f"compare_areas_{cohort_name.replace(' ', '_')}.png"
-    )
-
-    return jsonify({
-        'chart_url': f"/static/charts/{chart_path.name}"
-    })
 
 
 @app.route('/api/areas', methods=['GET'])
@@ -313,29 +109,7 @@ def get_areas():
     return jsonify(areas)
 
 
-@app.route('/api/visualize/distribution', methods=['POST'])
-def visualize_distribution():
-    """Generate distribution chart."""
-    data = request.json
-    vaccine_code = data.get('vaccine_code')
-    cohort_name = data.get('cohort_name', '24 months')
 
-    logger.log_action("visualize", "distribution", f"vaccine={vaccine_code}")
-
-    filtered_data = analyzer.filter_data(vaccine_code, cohort_name=cohort_name)
-
-    if not filtered_data:
-        return jsonify({'error': 'No data found'}), 404
-
-    chart_path = visualizer.plot_distribution(
-        filtered_data,
-        title=f"{vaccine_code} Coverage Distribution",
-        filename=f"distribution_{vaccine_code}.png"
-    )
-
-    return jsonify({
-        'chart_url': f"/static/charts/{chart_path.name}"
-    })
 
 
 @app.route('/api/visualize/table-comparison', methods=['POST'])
@@ -698,8 +472,8 @@ def get_all_areas():
 
 if __name__ == '__main__':
     # Create necessary directories
-    Path("static/charts").mkdir(parents=True, exist_ok=True)
-    Path("static/exports").mkdir(parents=True, exist_ok=True)
-    Path("logs").mkdir(parents=True, exist_ok=True)
+    (project_root / "static/charts").mkdir(parents=True, exist_ok=True)
+    (project_root / "static/exports").mkdir(parents=True, exist_ok=True)
+    (project_root / "logs").mkdir(parents=True, exist_ok=True)
 
     app.run(debug=True, port=5000)
